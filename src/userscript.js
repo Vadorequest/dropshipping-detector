@@ -334,6 +334,9 @@
 
       // Add the scrollable list of articles
       const articlesList = document.createElement('div');
+      articlesList.style.display = 'flex'; // Flex layout for multiple items in a row
+      articlesList.style.flexWrap = 'wrap'; // Allow wrapping of items to the next row
+      articlesList.style.gap = '20px'; // Space between items
       articlesList.style.overflowY = 'auto'; // Make only the list scrollable
       articlesList.style.maxHeight = '60vh';
 
@@ -351,13 +354,15 @@
 
       Object.keys(groupedArticles).forEach(domain => {
         const domainDiv = document.createElement('div');
-        domainDiv.style.marginBottom = '15px';
+        domainDiv.style.marginBottom = '20px';
         domainDiv.innerHTML = `<strong>${domain}</strong>`;
         articlesList.appendChild(domainDiv);
 
         groupedArticles[domain].forEach(article => {
           const articleDiv = document.createElement('div');
-          articleDiv.style.display = 'flex'; // Flex layout for image and text alignment
+          articleDiv.style.display = 'flex';
+          articleDiv.style.flexDirection = 'column'; // Column layout for image and text
+          articleDiv.style.width = `${IMG_SIZE + 300}px`; // Fixed width based on image size + 300px
           articleDiv.style.marginBottom = '10px';
 
           // Create anchor for both image and article title
@@ -366,32 +371,36 @@
           articleLink.style.color = 'white';
           articleLink.style.textDecoration = 'underline';
           articleLink.target = '_blank';
-          articleDiv.appendChild(articleLink);
 
           const img = document.createElement('img');
           img.src = article.images[0];
           img.style.width = `${IMG_SIZE}px`;
           img.style.height = `${IMG_SIZE}px`;
-          img.style.marginRight = '20px';
+          img.style.marginBottom = '10px';
 
           // Append image inside the link
           articleLink.appendChild(img);
 
           // Add the article title inside the link
           const articleText = document.createElement('span');
+          articleText.style.wordWrap = 'break-word'; // Allow the title to wrap if too long
+          articleText.style.fontSize = '14px'; // Adjust the size for readability
           articleText.innerHTML = `${article.title}`;
           articleLink.appendChild(articleText);
+
+          articleDiv.appendChild(articleLink);
 
           // Add the price below, outside the link
           const priceDiv = document.createElement('div');
           priceDiv.textContent = `${article.price}€`;
-          priceDiv.style.fontSize = '20px';
+          priceDiv.style.fontSize = '16px';
           priceDiv.style.fontWeight = 'bold';
+          priceDiv.style.marginTop = '5px';
 
           // Append price to article div
           articleDiv.appendChild(priceDiv);
 
-          domainDiv.appendChild(articleDiv);
+          articlesList.appendChild(articleDiv);
         });
       });
 
