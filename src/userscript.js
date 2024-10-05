@@ -389,7 +389,7 @@
     disclaimer.style.fontSize = '12px';
     disclaimer.style.color = 'gray';
     disclaimer.style.textAlign = 'center';
-    disclaimer.innerHTML = 'Disclaimer: This detection is provided as a tool to inform users about potential dropshipping websites. It is not 100% accurate. Full details can be found on the <a href="https://antidrop.fr/disclaimer" style="color: white; text-decoration: underline;" target="_blank">antidrop.fr disclaimer</a>.';
+    disclaimer.innerHTML = 'Avertissement : Cet outil est destiné à informer les utilisateurs sur les sites potentiellement liés au dropshipping. Il n\'est pas garanti à 100% précis. Vous pouvez consulter les détails complets sur la page <a href="https://antidrop.fr/disclaimer" style="color: white; text-decoration: underline;" target="_blank">d\'antidrop.fr</a>.';
     overlay.appendChild(disclaimer);
 
     document.body.appendChild(overlay);
