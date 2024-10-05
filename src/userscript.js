@@ -373,22 +373,23 @@
         groupedArticles[domain].forEach(article => {
           const articleDiv = document.createElement('div');
           articleDiv.style.display = 'flex';
-          articleDiv.style.flexDirection = 'column'; // Column layout for image and text
+          articleDiv.style.flexDirection = 'column'; // Column layout for article
           articleDiv.style.width = `${IMG_SIZE + 200}px`;
           articleDiv.style.marginBottom = '10px';
 
           // Create anchor for both image and article title
           const articleLink = document.createElement('a');
           articleLink.href = article.url;
-          articleLink.style.color = 'white';
-          articleLink.style.textDecoration = 'underline';
+          articleLink.style.display = 'flex'; // Flex layout for image and title side by side
+          articleLink.style.alignItems = 'flex-start'; // Align title and image to the top
+          articleLink.style.textDecoration = 'none';
           articleLink.target = '_blank';
 
           const img = document.createElement('img');
           img.src = article.images[0];
           img.style.width = `${IMG_SIZE}px`;
           img.style.height = `${IMG_SIZE}px`;
-          img.style.marginBottom = '10px';
+          img.style.marginRight = '10px';
 
           // Append image inside the link
           articleLink.appendChild(img);
@@ -397,6 +398,7 @@
           const articleText = document.createElement('span');
           articleText.style.wordWrap = 'break-word'; // Allow the title to wrap if too long
           articleText.style.fontSize = '14px'; // Adjust the size for readability
+          articleText.style.color = 'white';
           articleText.innerHTML = `${article.title}`;
           articleLink.appendChild(articleText);
 
@@ -408,6 +410,7 @@
           priceDiv.style.fontSize = '16px';
           priceDiv.style.fontWeight = 'bold';
           priceDiv.style.marginTop = '5px';
+          priceDiv.style.color = 'white';
 
           // Append price to article div
           articleDiv.appendChild(priceDiv);
