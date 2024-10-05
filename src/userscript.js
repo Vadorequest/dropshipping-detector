@@ -189,7 +189,7 @@
     overlay.style.height = '100vh';
     overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.95)';
     overlay.style.color = 'white';
-    overlay.style.fontSize = '24px';
+    overlay.style.fontSize = '16px';
     overlay.style.display = 'flex';
     overlay.style.flexDirection = 'column';
     overlay.style.alignItems = 'center';
@@ -272,8 +272,25 @@
     notDropshippingLink.style.textDecoration = 'underline';
     overlay.appendChild(notDropshippingLink);
 
-    // Show technologies plainly (no collapse)
     if (technos && technos.length > 0) {
+      // Add explanation before the technologies section
+      const technosTitle = document.createElement('div');
+      technosTitle.style.fontSize = '1.8rem'; // Make the title larger
+      technosTitle.style.fontWeight = 'bold';
+      technosTitle.style.marginBottom = '10px';
+      technosTitle.style.color = 'white';
+      technosTitle.textContent = 'Technologies associées au dropshipping';
+
+      const technosExplanation = document.createElement('div');
+      technosExplanation.style.fontSize = '1rem';
+      technosExplanation.style.marginBottom = '20px';
+      technosExplanation.style.color = 'orange';
+      technosExplanation.textContent = 'Les technologies détectées sur ce site peuvent indiquer un lien avec des pratiques de dropshipping. Veuillez les vérifier attentivement.';
+
+      overlay.appendChild(technosTitle);
+      overlay.appendChild(technosExplanation);
+
+      // Create and append the technologies section
       const technosSection = document.createElement('div');
       technosSection.style.textAlign = 'left';
       technosSection.style.maxWidth = '80%';
@@ -288,6 +305,7 @@
         techDiv.innerHTML = `<strong>${tech.name}:</strong> ${tech.description}`;
         technosSection.appendChild(techDiv);
       });
+
       overlay.appendChild(technosSection);
     }
 
