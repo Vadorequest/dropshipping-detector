@@ -148,15 +148,28 @@
     banner.style.padding = '10px 20px';
     banner.style.zIndex = '2147483647'; // Max z-index
 
-    // Add the warning text with an orange SVG icon
+    // Add the warning text with an orange SVG icon and a link to open the overlay
     const warningText = document.createElement('div');
-    warningText.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${warningColor}" width="24px" height="24px" style="${iconStyle}"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg> ATTENTION: Ce site a ${probability}% de probabilité d'être un site de DROPSHIPPING!`;
+    warningText.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${warningColor}" width="24px" height="24px" style="${iconStyle}">
+        <path d="M0 0h24v24H0V0z" fill="none"/>
+        <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+      </svg> 
+      ATTENTION: Ce site a ${probability}% de probabilité d'être un site de DROPSHIPPING! 
+      <a href="#" id="viewDetails" style="text-decoration: underline; color: black;">Voir les détails</a>
+    `;
     warningText.style.color = 'black';
     banner.appendChild(warningText);
 
     // Add a close button to remove the banner
     const closeButton = document.createElement('button');
-    closeButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="black" width="24px" height="24px" style="${iconStyle}"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 13.59L15.59 18 12 14.41 8.41 18 7 16.59 10.59 13 7 9.41 8.41 8 12 11.59 15.59 8 17 9.41 13.41 13 17 16.59z"/></svg> Fermer`;
+    closeButton.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="black" width="24px" height="24px" style="${iconStyle}">
+        <path d="M0 0h24v24H0V0z" fill="none"/>
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 13.59L15.59 18 12 14.41 8.41 18 7 16.59 10.59 13 7 9.41 8.41 8 12 11.59 15.59 8 17 9.41 13.41 13 17 16.59z"/>
+      </svg> 
+      Fermer
+    `;
     closeButton.style.background = 'transparent';
     closeButton.style.border = 'none';
     closeButton.style.cursor = 'pointer';
@@ -168,6 +181,13 @@
 
     // Append the banner to the body
     document.body.appendChild(banner);
+
+    // Add event listener to the "Voir les détails" link to show the overlay
+    document.getElementById('viewDetails').addEventListener('click', (e) => {
+      e.preventDefault();
+      banner.remove();  // Optionally remove the banner when showing overlay
+      showFullScreenWarning(probability, [], [], null);  // Call the overlay function
+    });
   }
 
   function getApexDomain(url) {
