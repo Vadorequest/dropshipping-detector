@@ -11,6 +11,9 @@
 (function () {
   'use strict';
 
+  // Align SVG icons with text
+  const iconStyle = 'vertical-align: middle; margin-right: 10px;';
+
   // Function to detect if a site is e-commerce and collect reasons
   function detectEcommerce() {
     let isEcommerce = false;
@@ -123,7 +126,7 @@
 
     // Add a close button with an icon to remove the overlay
     const closeButton = document.createElement('button');
-    closeButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="24px" height="24px"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 13.59L15.59 18 12 14.41 8.41 18 7 16.59 10.59 13 7 9.41 8.41 8 12 11.59 15.59 8 17 9.41 13.41 13 17 16.59z"/></svg> Fermer';
+    closeButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="24px" height="24px" style="${iconStyle}"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 13.59L15.59 18 12 14.41 8.41 18 7 16.59 10.59 13 7 9.41 8.41 8 12 11.59 15.59 8 17 9.41 13.41 13 17 16.59z"/></svg> Fermer`;
     closeButton.style.position = 'absolute';
     closeButton.style.top = '10px';
     closeButton.style.right = '20px';
@@ -148,7 +151,7 @@
 
     // Add the warning text (in French) with an SVG icon
     const warningText = document.createElement('div');
-    warningText.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="48px" height="48px"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg> ATTENTION: Ce site a ${probability}% de probabilité d'être un site de DROPSHIPPING!`;
+    warningText.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="48px" height="48px" style="${iconStyle}"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg> ATTENTION: Ce site a ${probability}% de probabilité d'être un site de DROPSHIPPING!`;
     warningText.style.marginBottom = '20px';
     warningText.style.color = 'white';
     overlay.appendChild(warningText);
@@ -170,7 +173,7 @@
       hour: 'numeric',
       minute: 'numeric'
     });
-    lastSearchText.innerHTML = `Dernière mise à jour de la base de données AntiDrop: <br />${formattedDate}`;
+    lastSearchText.innerHTML = `Dernière mise à jour sur la base de données AntiDrop: <br />${formattedDate}`;
     lastSearchText.style.fontSize = '1.2rem';
     lastSearchText.style.marginBottom = '20px';
     lastSearchText.style.color = 'white';
@@ -224,8 +227,14 @@
 
     // Append overlay to the body
     document.body.appendChild(overlay);
-  }
 
+    // Add an event listener for the Escape key to close the overlay
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' || e.key === 'Esc') {
+        overlay.remove();
+      }
+    });
+  }
   // Detect Checkout or Cart Forms in multiple languages
   function detectCheckoutForms() {
     const forms = document.querySelectorAll('form');
