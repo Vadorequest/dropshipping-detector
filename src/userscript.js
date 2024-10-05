@@ -11,6 +11,9 @@
 (function () {
   'use strict';
 
+  // Customizable probability threshold for showing full-screen warning
+  const PROBABILITY_THRESHOLD = 49; // If probability >= 50, full-screen overlay is shown, otherwise banner is shown
+
   const domainName = window.location.hostname;
 
   // Align SVG icons with text
@@ -110,8 +113,8 @@
     // Calculate the dropshipping probability as a percentage
     const probability = (mark / 5) * 100;
 
-    // If probability is less than 50%, show the top banner
-    if (probability <= 50) {
+    // If probability is less than the threshold, show the top banner
+    if (probability <= PROBABILITY_THRESHOLD) {
       showTopBannerWarning(probability);
     } else {
       // Otherwise, show the full-screen overlay
@@ -119,7 +122,7 @@
     }
   }
 
-  // Function to show the less intrusive top banner (for probability <= 50%)
+  // Function to show the less intrusive top banner (for probability <= PROBABILITY_THRESHOLD)
   function showTopBannerWarning(probability) {
     const warningColor = 'orange'; // Orange for low probability warnings
 
@@ -160,7 +163,19 @@
     document.body.appendChild(banner);
   }
 
-  // Function to show the full-screen overlay (for probability >= 50%)
+  function getApexDomain(url) {
+    const domain = new URL(url).hostname;
+    const parts = domain.split('.').reverse();
+
+    // Handle domains like co.uk, com.au, etc.
+    if (parts.length >= 3 && (parts[1] === 'co' || parts[1] === 'com')) {
+      return parts[2] + '.' + parts[1] + '.' + parts[0];
+    }
+
+    return parts[1] + '.' + parts[0];
+  }
+
+  // Function to show the full-screen overlay (for probability > PROBABILITY_THRESHOLD)
   function showFullScreenWarning(probability, technos, similarArticles, lastSearchDate) {
     const warningColor = 'red'; // Red for high probability warnings
 
@@ -211,6 +226,15 @@
     warningText.style.marginBottom = '20px';
     warningText.style.color = 'white';
     overlay.appendChild(warningText);
+
+    // Add the explanation of how the result was determined
+    const explanationText = document.createElement('div');
+    explanationText.innerHTML = `Le résultat ci-dessus est basé sur plusieurs facteurs, tels que les technologies utilisées par ce site, les produits vendus, et d'autres éléments techniques.<br><br>
+      Un pourcentage de 100% est généralement très fiable. Si vous avez des doutes, vous pouvez visiter <a href="https://antidrop.fr/contact" target="_blank" style="color: white; text-decoration: underline;">ce lien</a> pour plus de détails ou pour contester le résultat.`;
+    explanationText.style.marginBottom = '20px';
+    explanationText.style.textAlign = 'center';
+    explanationText.style.color = 'white';
+    overlay.appendChild(explanationText);
 
     // Add a reference to antidrop.fr
     const sourceText = document.createElement('div');
@@ -304,12 +328,38 @@
       articlesSection.style.padding = '10px';
       articlesSection.style.color = 'white';
 
+      const groupedArticles = [];
+
       similarArticles.forEach(article => {
-        const articleDiv = document.createElement('div');
-        articleDiv.style.marginBottom = '10px';
-        articleDiv.innerHTML = `<a href="${article}" target="_blank" style="color: white; text-decoration: underline;">${article}</a>`;
-        articlesSection.appendChild(articleDiv);
+        // Extract apex domain instead of subdomain
+        const apexDomain = getApexDomain(article.url);
+
+        // If the domain doesn't exist in the grouping object, initialize it
+        if (!groupedArticles[apexDomain]) {
+          groupedArticles[apexDomain] = [];
+        }
+
+        // Push the article to the domain group
+        groupedArticles[apexDomain].push(article);
       });
+
+      // Now iterate over the grouped articles and display them
+      Object.keys(groupedArticles).forEach(domain => {
+        // Create a section for each domain
+        const domainDiv = document.createElement('div');
+        domainDiv.style.marginBottom = '15px';
+        domainDiv.innerHTML = `<strong>${domain}</strong>`;
+        articlesSection.appendChild(domainDiv);
+
+        // Display articles for this domain
+        groupedArticles[domain].forEach(article => {
+          const articleDiv = document.createElement('div');
+          articleDiv.style.marginBottom = '10px';
+          articleDiv.innerHTML = `<a href="${article.url}" target="_blank" style="color: white; text-decoration: underline;">(${article.price}€) ${article.title}</a>`;
+          domainDiv.appendChild(articleDiv);
+        });
+      });
+
 
       overlay.appendChild(articlesSection);
 
