@@ -15,7 +15,7 @@ This userscript detects whether the current site is a dropshipping website using
 ### How to Install
 
 1. Install a userscript manager like [Tampermonkey](https://www.tampermonkey.net/) or [Greasemonkey](https://www.greasespot.net/).
-2. Add this userscript to your userscript manager.
+2. Add [this userscript](./blob/main/src/userscript.js) to your userscript manager.
 3. Visit any e-commerce website and the script will automatically run.
 
 ## Status
