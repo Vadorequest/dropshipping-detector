@@ -108,125 +108,164 @@
     // Calculate the dropshipping probability as a percentage
     const probability = (mark / 5) * 100;
 
-    // Create a full-screen overlay
-    const overlay = document.createElement('div');
-    overlay.style.position = 'fixed';
-    overlay.style.top = '0';
-    overlay.style.left = '0';
-    overlay.style.width = '100vw';
-    overlay.style.height = '100vh';
-    overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.95)';
-    overlay.style.color = 'white';
-    overlay.style.fontSize = '2rem';
-    overlay.style.display = 'flex';
-    overlay.style.flexDirection = 'column';
-    overlay.style.alignItems = 'center';
-    overlay.style.justifyContent = 'center';
-    overlay.style.zIndex = '2147483647'; // Max z-index
+    // If probability is less than 50%, show a top banner instead of the full-screen overlay
+    if (probability < 50) {
+      // Create a top banner
+      const banner = document.createElement('div');
+      banner.style.position = 'fixed';
+      banner.style.top = '0';
+      banner.style.left = '0';
+      banner.style.width = '100vw';
+      banner.style.backgroundColor = 'rgba(255, 165, 0, 0.95)'; // Use orange color for a less intrusive warning
+      banner.style.color = 'black';
+      banner.style.fontSize = '1.5rem';
+      banner.style.display = 'flex';
+      banner.style.alignItems = 'center';
+      banner.style.justifyContent = 'space-between';
+      banner.style.padding = '10px 20px';
+      banner.style.zIndex = '2147483647'; // Max z-index
 
-    // Add a close button with an icon to remove the overlay
-    const closeButton = document.createElement('button');
-    closeButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="24px" height="24px" style="${iconStyle}"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 13.59L15.59 18 12 14.41 8.41 18 7 16.59 10.59 13 7 9.41 8.41 8 12 11.59 15.59 8 17 9.41 13.41 13 17 16.59z"/></svg> Fermer`;
-    closeButton.style.position = 'absolute';
-    closeButton.style.top = '10px';
-    closeButton.style.right = '20px';
-    closeButton.style.fontSize = '1.5rem';
-    closeButton.style.color = 'white';
-    closeButton.style.background = 'transparent';
-    closeButton.style.border = 'none';
-    closeButton.style.cursor = 'pointer';
-    closeButton.addEventListener('click', () => {
-      overlay.remove();
-    });
-    overlay.appendChild(closeButton);
+      // Add the warning text (in French) with an SVG icon
+      const warningText = document.createElement('div');
+      warningText.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="black" width="24px" height="24px" style="${iconStyle}"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg> ATTENTION: Ce site a ${probability}% de probabilité d'être un site de DROPSHIPPING!`;
+      warningText.style.color = 'black';
+      banner.appendChild(warningText);
 
-    // Add the probability at the top (in a big way)
-    const probabilityText = document.createElement('div');
-    probabilityText.textContent = `${probability}%`;
-    probabilityText.style.fontSize = '5rem';
-    probabilityText.style.fontWeight = 'bold';
-    probabilityText.style.marginBottom = '20px';
-    probabilityText.style.color = 'white';
-    overlay.appendChild(probabilityText);
-
-    // Add the warning text (in French) with an SVG icon
-    const warningText = document.createElement('div');
-    warningText.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="48px" height="48px" style="${iconStyle}"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg> ATTENTION: Ce site a ${probability}% de probabilité d'être un site de DROPSHIPPING!`;
-    warningText.style.marginBottom = '20px';
-    warningText.style.color = 'white';
-    overlay.appendChild(warningText);
-
-    // Add a reference to antidrop.fr
-    const sourceText = document.createElement('div');
-    sourceText.innerHTML = 'Résultat fourni par <a href="https://antidrop.fr" target="_blank" style="color: white; text-decoration: underline;">antidrop.fr</a>';
-    sourceText.style.fontSize = '1rem';
-    sourceText.style.marginBottom = '20px';
-    sourceText.style.color = 'white';
-    overlay.appendChild(sourceText);
-
-    // Add the "lastSearchDate" using datetime formatting
-    const lastSearchText = document.createElement('div');
-    const formattedDate = new Date(lastSearchDate).toLocaleDateString('fr-FR', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: 'numeric'
-    });
-    lastSearchText.innerHTML = `Dernière mise à jour sur la base de données AntiDrop: <br />${formattedDate}`;
-    lastSearchText.style.fontSize = '1.2rem';
-    lastSearchText.style.marginBottom = '20px';
-    lastSearchText.style.color = 'white';
-    overlay.appendChild(lastSearchText);
-
-    // Create a collapsible section for technologies if any
-    if (technos && technos.length > 0) {
-      const detailsButton = document.createElement('button');
-      detailsButton.textContent = 'Voir les détails';
-      detailsButton.style.marginBottom = '10px';
-      detailsButton.style.fontSize = '1.5rem';
-      detailsButton.style.color = 'white';
-      detailsButton.style.background = 'transparent';
-      detailsButton.style.border = '1px solid white';
-      detailsButton.style.cursor = 'pointer';
-      overlay.appendChild(detailsButton);
-
-      const technosSection = document.createElement('div');
-      technosSection.style.display = 'none';
-      technosSection.style.textAlign = 'left';
-      technosSection.style.maxWidth = '80%';
-      technosSection.style.maxHeight = '50%';
-      technosSection.style.overflowY = 'auto';
-      technosSection.style.border = '1px solid white';
-      technosSection.style.padding = '10px';
-      technosSection.style.color = 'white';
-
-      technos.forEach(tech => {
-        const techDiv = document.createElement('div');
-        techDiv.style.marginBottom = '10px';
-        techDiv.innerHTML = `<strong>${tech.name}:</strong> ${tech.description}`;
-        technosSection.appendChild(techDiv);
+      // Add a close button to remove the banner
+      const closeButton = document.createElement('button');
+      closeButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="black" width="24px" height="24px" style="${iconStyle}"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 13.59L15.59 18 12 14.41 8.41 18 7 16.59 10.59 13 7 9.41 8.41 8 12 11.59 15.59 8 17 9.41 13.41 13 17 16.59z"/></svg> Fermer`;
+      closeButton.style.background = 'transparent';
+      closeButton.style.border = 'none';
+      closeButton.style.cursor = 'pointer';
+      closeButton.style.fontSize = '1.5rem';
+      closeButton.addEventListener('click', () => {
+        banner.remove();
       });
+      banner.appendChild(closeButton);
 
-      overlay.appendChild(technosSection);
+      // Append the banner to the body
+      document.body.appendChild(banner);
+    } else {
+      // Use the full-screen overlay if the probability is 50% or more
+      const overlay = document.createElement('div');
+      overlay.style.position = 'fixed';
+      overlay.style.top = '0';
+      overlay.style.left = '0';
+      overlay.style.width = '100vw';
+      overlay.style.height = '100vh';
+      overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.95)';
+      overlay.style.color = 'white';
+      overlay.style.fontSize = '2rem';
+      overlay.style.display = 'flex';
+      overlay.style.flexDirection = 'column';
+      overlay.style.alignItems = 'center';
+      overlay.style.justifyContent = 'center';
+      overlay.style.zIndex = '2147483647'; // Max z-index
 
-      // Toggle the display of the technologies section
-      detailsButton.addEventListener('click', () => {
-        technosSection.style.display = technosSection.style.display === 'none' ? 'block' : 'none';
+      // Add a close button with an icon to remove the overlay
+      const closeButton = document.createElement('button');
+      closeButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="24px" height="24px" style="${iconStyle}"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 13.59L15.59 18 12 14.41 8.41 18 7 16.59 10.59 13 7 9.41 8.41 8 12 11.59 15.59 8 17 9.41 13.41 13 17 16.59z"/></svg> Fermer`;
+      closeButton.style.position = 'absolute';
+      closeButton.style.top = '10px';
+      closeButton.style.right = '20px';
+      closeButton.style.fontSize = '1.5rem';
+      closeButton.style.color = 'white';
+      closeButton.style.background = 'transparent';
+      closeButton.style.border = 'none';
+      closeButton.style.cursor = 'pointer';
+      closeButton.addEventListener('click', () => {
+        overlay.remove();
       });
-    }
+      overlay.appendChild(closeButton);
 
-    // Add similar articles count and link if any
-    if (similarArticles && similarArticles.length > 0) {
-      const articlesText = document.createElement('div');
-      articlesText.innerHTML = `Nombre d'articles similaires: ${similarArticles.length} <br/> <a href="${similarArticles[0]}" target="_blank" style="color: white; text-decoration: underline;">Voir le premier article</a>`;
-      articlesText.style.marginTop = '20px';
-      articlesText.style.color = 'white';
-      overlay.appendChild(articlesText);
-    }
+      // Add the probability at the top (in a big way)
+      const probabilityText = document.createElement('div');
+      probabilityText.textContent = `${probability}%`;
+      probabilityText.style.fontSize = '5rem';
+      probabilityText.style.fontWeight = 'bold';
+      probabilityText.style.marginBottom = '20px';
+      probabilityText.style.color = 'white';
+      overlay.appendChild(probabilityText);
 
-    // Append overlay to the body
-    document.body.appendChild(overlay);
+      // Add the warning text (in French) with an SVG icon
+      const warningText = document.createElement('div');
+      warningText.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="48px" height="48px" style="${iconStyle}"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg> ATTENTION: Ce site a ${probability}% de probabilité d'être un site de DROPSHIPPING!`;
+      warningText.style.marginBottom = '20px';
+      warningText.style.color = 'white';
+      overlay.appendChild(warningText);
+
+      // Add a reference to antidrop.fr
+      const sourceText = document.createElement('div');
+      sourceText.innerHTML = 'Résultat fourni par <a href="https://antidrop.fr" target="_blank" style="color: white; text-decoration: underline;">antidrop.fr</a>';
+      sourceText.style.fontSize = '1rem';
+      sourceText.style.marginBottom = '20px';
+      sourceText.style.color = 'white';
+      overlay.appendChild(sourceText);
+
+      // Add the "lastSearchDate" using datetime formatting
+      const lastSearchText = document.createElement('div');
+      const formattedDate = new Date(lastSearchDate).toLocaleDateString('fr-FR', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric'
+      });
+      lastSearchText.innerHTML = `Dernière mise à jour sur la base de données AntiDrop: <br />${formattedDate}`;
+      lastSearchText.style.fontSize = '1.2rem';
+      lastSearchText.style.marginBottom = '20px';
+      lastSearchText.style.color = 'white';
+      overlay.appendChild(lastSearchText);
+
+      // Create a collapsible section for technologies if any
+      if (technos && technos.length > 0) {
+        const detailsButton = document.createElement('button');
+        detailsButton.textContent = 'Voir les détails';
+        detailsButton.style.marginBottom = '10px';
+        detailsButton.style.fontSize = '1.5rem';
+        detailsButton.style.color = 'white';
+        detailsButton.style.background = 'transparent';
+        detailsButton.style.border = '1px solid white';
+        detailsButton.style.cursor = 'pointer';
+        overlay.appendChild(detailsButton);
+
+        const technosSection = document.createElement('div');
+        technosSection.style.display = 'none';
+        technosSection.style.textAlign = 'left';
+        technosSection.style.maxWidth = '80%';
+        technosSection.style.maxHeight = '50%';
+        technosSection.style.overflowY = 'auto';
+        technosSection.style.border = '1px solid white';
+        technosSection.style.padding = '10px';
+        technosSection.style.color = 'white';
+
+        technos.forEach(tech => {
+          const techDiv = document.createElement('div');
+          techDiv.style.marginBottom = '10px';
+          techDiv.innerHTML = `<strong>${tech.name}:</strong> ${tech.description}`;
+          technosSection.appendChild(techDiv);
+        });
+
+        overlay.appendChild(technosSection);
+
+        // Toggle the display of the technologies section
+        detailsButton.addEventListener('click', () => {
+          technosSection.style.display = technosSection.style.display === 'none' ? 'block' : 'none';
+        });
+      }
+
+      // Add similar articles count and link if any
+      if (similarArticles && similarArticles.length > 0) {
+        const articlesText = document.createElement('div');
+        articlesText.innerHTML = `Nombre d'articles similaires: ${similarArticles.length} <br/> <a href="${similarArticles[0]}" target="_blank" style="color: white; text-decoration: underline;">Voir le premier article</a>`;
+        articlesText.style.marginTop = '20px';
+        articlesText.style.color = 'white';
+        overlay.appendChild(articlesText);
+      }
+
+      // Append overlay to the body
+      document.body.appendChild(overlay);
+    }
 
     // Add an event listener for the Escape key to close the overlay
     document.addEventListener('keydown', (e) => {
@@ -235,6 +274,7 @@
       }
     });
   }
+
   // Detect Checkout or Cart Forms in multiple languages
   function detectCheckoutForms() {
     const forms = document.querySelectorAll('form');
