@@ -193,7 +193,9 @@
     overlay.style.display = 'flex';
     overlay.style.flexDirection = 'column';
     overlay.style.alignItems = 'center';
-    overlay.style.justifyContent = 'center';
+    overlay.style.justifyContent = 'flex-start'; // Align content from the top
+    overlay.style.overflow = 'auto'; // Enable scrolling for the whole overlay
+    overlay.style.padding = '20px';
     overlay.style.zIndex = '2147483647'; // Max z-index
 
     // Add a close button with an icon to remove the overlay
