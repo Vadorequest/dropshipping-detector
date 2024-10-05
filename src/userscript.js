@@ -121,13 +121,16 @@
     overlay.style.justifyContent = 'center';
     overlay.style.zIndex = '2147483647'; // Max z-index
 
-    // Add a close button to remove the overlay
+    // Add a close button with an icon to remove the overlay
     const closeButton = document.createElement('button');
-    closeButton.textContent = 'Fermer';
+    closeButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="24px" height="24px"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 13.59L15.59 18 12 14.41 8.41 18 7 16.59 10.59 13 7 9.41 8.41 8 12 11.59 15.59 8 17 9.41 13.41 13 17 16.59z"/></svg> Fermer';
     closeButton.style.position = 'absolute';
     closeButton.style.top = '10px';
     closeButton.style.right = '20px';
     closeButton.style.fontSize = '1.5rem';
+    closeButton.style.color = 'white';
+    closeButton.style.background = 'transparent';
+    closeButton.style.border = 'none';
     closeButton.style.cursor = 'pointer';
     closeButton.addEventListener('click', () => {
       overlay.remove();
@@ -140,27 +143,37 @@
     probabilityText.style.fontSize = '5rem';
     probabilityText.style.fontWeight = 'bold';
     probabilityText.style.marginBottom = '20px';
+    probabilityText.style.color = 'white';
     overlay.appendChild(probabilityText);
 
-    // Add the warning text (in French)
+    // Add the warning text (in French) with an SVG icon
     const warningText = document.createElement('div');
-    warningText.textContent = `⚠️ ATTENTION: Ce site a ${probability}% de probabilité d'être un site de DROPSHIPPING!`;
+    warningText.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="48px" height="48px"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg> ATTENTION: Ce site a ${probability}% de probabilité d'être un site de DROPSHIPPING!`;
     warningText.style.marginBottom = '20px';
+    warningText.style.color = 'white';
     overlay.appendChild(warningText);
 
     // Add a reference to antidrop.fr
     const sourceText = document.createElement('div');
-    sourceText.innerHTML = 'Résultat fourni par <a href="antidrop.fr">antidrop.fr</a>';
+    sourceText.innerHTML = 'Résultat fourni par <a href="https://antidrop.fr" target="_blank" style="color: white; text-decoration: underline;">antidrop.fr</a>';
     sourceText.style.fontSize = '1rem';
     sourceText.style.marginBottom = '20px';
+    sourceText.style.color = 'white';
     overlay.appendChild(sourceText);
 
-    // Add the "lastSearchDate"
+    // Add the "lastSearchDate" using datetime formatting
     const lastSearchText = document.createElement('div');
-    const formattedDate = new Date(lastSearchDate).toLocaleDateString('fr-FR');
-    lastSearchText.textContent = `Dernière mise à jour de la base de données AntiDrop: ${formattedDate}`;
+    const formattedDate = new Date(lastSearchDate).toLocaleDateString('fr-FR', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric'
+    });
+    lastSearchText.innerHTML = `Dernière mise à jour de la base de données AntiDrop: <br />${formattedDate}`;
     lastSearchText.style.fontSize = '1.2rem';
     lastSearchText.style.marginBottom = '20px';
+    lastSearchText.style.color = 'white';
     overlay.appendChild(lastSearchText);
 
     // Create a collapsible section for technologies if any
@@ -169,6 +182,9 @@
       detailsButton.textContent = 'Voir les détails';
       detailsButton.style.marginBottom = '10px';
       detailsButton.style.fontSize = '1.5rem';
+      detailsButton.style.color = 'white';
+      detailsButton.style.background = 'transparent';
+      detailsButton.style.border = '1px solid white';
       detailsButton.style.cursor = 'pointer';
       overlay.appendChild(detailsButton);
 
@@ -180,6 +196,7 @@
       technosSection.style.overflowY = 'auto';
       technosSection.style.border = '1px solid white';
       technosSection.style.padding = '10px';
+      technosSection.style.color = 'white';
 
       technos.forEach(tech => {
         const techDiv = document.createElement('div');
@@ -199,8 +216,9 @@
     // Add similar articles count and link if any
     if (similarArticles && similarArticles.length > 0) {
       const articlesText = document.createElement('div');
-      articlesText.innerHTML = `Nombre d'articles similaires: ${similarArticles.length} <br/> <a href="${similarArticles[0]}" target="_blank" style="color: #fff; text-decoration: underline;">Voir le premier article</a>`;
+      articlesText.innerHTML = `Nombre d'articles similaires: ${similarArticles.length} <br/> <a href="${similarArticles[0]}" target="_blank" style="color: white; text-decoration: underline;">Voir le premier article</a>`;
       articlesText.style.marginTop = '20px';
+      articlesText.style.color = 'white';
       overlay.appendChild(articlesText);
     }
 
