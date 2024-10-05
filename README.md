@@ -1,0 +1,2 @@
+# dropshipping-detector
+Dropshipping detector
