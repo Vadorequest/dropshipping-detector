@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Dropshipping Detector
 // @namespace    http://tampermonkey.net/
-// @version      0.4
+// @version      0.5
 // @description  Detect if the current site is a dropshipping website. Relies on "Antidrop.fr".
 // @author       [Ambroise Dhenain](https://ambroise.dhenain.fr/)
 // @match        *://*/*
@@ -10,6 +10,8 @@
 
 (function () {
   'use strict';
+
+  const domainName = window.location.hostname;
 
   // Align SVG icons with text
   const iconStyle = 'vertical-align: middle; margin-right: 10px;';
@@ -87,7 +89,7 @@
       .then(response => response.json())
       .then(data => {
         if (data && data.mark > 0) {
-          console.warn('[Dropshipping Detector] Dropshipping site detected.');
+          console.debug('[Dropshipping Detector] Dropshipping site detected.', data);
           showDropshippingWarning(
             data?.mark ?? 0,
             data?.website?.technos ?? [],
@@ -95,7 +97,7 @@
             data?.lastSearchDate ?? null
           );
         } else {
-          console.debug('[Dropshipping Detector] No dropshipping detected.');
+          console.debug('[Dropshipping Detector] No dropshipping detected.', data);
         }
       })
       .catch(error => {
@@ -109,7 +111,7 @@
     const probability = (mark / 5) * 100;
 
     // If probability is less than 50%, show the top banner
-    if (probability < 50) {
+    if (probability <= 50) {
       showTopBannerWarning(probability);
     } else {
       // Otherwise, show the full-screen overlay
@@ -117,7 +119,7 @@
     }
   }
 
-// Function to show the less intrusive top banner (for probability < 50%)
+  // Function to show the less intrusive top banner (for probability <= 50%)
   function showTopBannerWarning(probability) {
     const warningColor = 'orange'; // Orange for low probability warnings
 
@@ -158,7 +160,7 @@
     document.body.appendChild(banner);
   }
 
-// Function to show the full-screen overlay (for probability >= 50%)
+  // Function to show the full-screen overlay (for probability >= 50%)
   function showFullScreenWarning(probability, technos, similarArticles, lastSearchDate) {
     const warningColor = 'red'; // Red for high probability warnings
 
@@ -233,15 +235,26 @@
     lastSearchText.style.color = 'white';
     overlay.appendChild(lastSearchText);
 
+// Add bottom-left "Ce site n'est pas du dropshipping" link
+    const notDropshippingLink = document.createElement('a');
+    notDropshippingLink.href = 'https://antidrop.fr/contact';
+    notDropshippingLink.textContent = 'Ce site n\'est pas du dropshipping';
+    notDropshippingLink.target = '_blank';  // Open in a new tab
+    notDropshippingLink.style.position = 'absolute';
+    notDropshippingLink.style.bottom = '10px';  // Positioned at the bottom
+    notDropshippingLink.style.left = '10px';   // Positioned at the left
+    notDropshippingLink.style.color = 'white';
+    notDropshippingLink.style.textDecoration = 'underline';
+    overlay.appendChild(notDropshippingLink);
+
     // Create a collapsible section for technologies if any
     if (technos && technos.length > 0) {
       const detailsButton = document.createElement('button');
-      detailsButton.textContent = 'Voir les détails';
+      detailsButton.textContent = `Voir les technologies associées au dropshipping utilisées par ${domainName}`;
       detailsButton.style.marginBottom = '10px';
       detailsButton.style.fontSize = '1.5rem';
       detailsButton.style.color = 'white';
       detailsButton.style.background = 'transparent';
-      detailsButton.style.border = '1px solid white';
       detailsButton.style.cursor = 'pointer';
       overlay.appendChild(detailsButton);
 
@@ -251,7 +264,6 @@
       technosSection.style.maxWidth = '80%';
       technosSection.style.maxHeight = '50%';
       technosSection.style.overflowY = 'auto';
-      technosSection.style.border = '1px solid white';
       technosSection.style.padding = '10px';
       technosSection.style.color = 'white';
 
@@ -270,13 +282,41 @@
       });
     }
 
-    // Add similar articles count and link if any
+    // Add "Voir les articles" collapsed section for similar articles
     if (similarArticles && similarArticles.length > 0) {
-      const articlesText = document.createElement('div');
-      articlesText.innerHTML = `Nombre d'articles similaires: ${similarArticles.length} <br/> <a href="${similarArticles[0]}" target="_blank" style="color: white; text-decoration: underline;">Voir le premier article</a>`;
-      articlesText.style.marginTop = '20px';
-      articlesText.style.color = 'white';
-      overlay.appendChild(articlesText);
+      const articlesButton = document.createElement('button');
+      articlesButton.textContent = 'Voir les articles';
+      articlesButton.style.marginBottom = '10px';
+      articlesButton.style.fontSize = '1.5rem';
+      articlesButton.style.color = 'white';
+      articlesButton.style.background = 'transparent';
+      articlesButton.style.border = '1px solid white';
+      articlesButton.style.cursor = 'pointer';
+      overlay.appendChild(articlesButton);
+
+      const articlesSection = document.createElement('div');
+      articlesSection.style.display = 'none';
+      articlesSection.style.textAlign = 'left';
+      articlesSection.style.maxWidth = '80%';
+      articlesSection.style.maxHeight = '50%';
+      articlesSection.style.overflowY = 'auto';
+      articlesSection.style.border = '1px solid white';
+      articlesSection.style.padding = '10px';
+      articlesSection.style.color = 'white';
+
+      similarArticles.forEach(article => {
+        const articleDiv = document.createElement('div');
+        articleDiv.style.marginBottom = '10px';
+        articleDiv.innerHTML = `<a href="${article}" target="_blank" style="color: white; text-decoration: underline;">${article}</a>`;
+        articlesSection.appendChild(articleDiv);
+      });
+
+      overlay.appendChild(articlesSection);
+
+      // Toggle the display of the articles section
+      articlesButton.addEventListener('click', () => {
+        articlesSection.style.display = articlesSection.style.display === 'none' ? 'block' : 'none';
+      });
     }
 
     // Append overlay to the body
@@ -285,7 +325,7 @@
     // Add an event listener for the Escape key to close the overlay
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' || e.key === 'Esc') {
-        overlay?.remove();
+        overlay.remove();
       }
     });
   }
