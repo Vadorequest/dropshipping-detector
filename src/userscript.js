@@ -332,11 +332,11 @@
       articlesTitleContainer.appendChild(articlesWarning);
       articlesSection.appendChild(articlesTitleContainer); // Append sticky title/warning
 
-      // Add the scrollable list of articles
+// Add the scrollable list of articles
       const articlesList = document.createElement('div');
-      articlesList.style.display = 'flex'; // Flex layout for multiple items in a row
+      articlesList.style.display = 'flex'; // Flex layout for multiple domains in a row
       articlesList.style.flexWrap = 'wrap'; // Allow wrapping of items to the next row
-      articlesList.style.gap = '20px'; // Space between items
+      articlesList.style.gap = '20px'; // Space between domain groups
       articlesList.style.overflowY = 'auto'; // Make only the list scrollable
       articlesList.style.maxHeight = '60vh';
 
@@ -353,16 +353,28 @@
       });
 
       Object.keys(groupedArticles).forEach(domain => {
+        // Create a container for each domain and its articles
+        const domainGroup = document.createElement('div');
+        domainGroup.style.display = 'flex';
+        domainGroup.style.flexDirection = 'column'; // Stack domain name and articles vertically
+        domainGroup.style.width = '100%'; // Ensure full width for each domain block
+
         const domainDiv = document.createElement('div');
-        domainDiv.style.marginBottom = '20px';
+        domainDiv.style.marginBottom = '15px';
         domainDiv.innerHTML = `<strong>${domain}</strong>`;
-        articlesList.appendChild(domainDiv);
+        domainGroup.appendChild(domainDiv);
+
+        // Create a container for articles under this domain
+        const articlesContainer = document.createElement('div');
+        articlesContainer.style.display = 'flex'; // Flex layout for multiple items in a row
+        articlesContainer.style.flexWrap = 'wrap'; // Allow wrapping of items to the next row
+        articlesContainer.style.gap = '20px'; // Space between articles
 
         groupedArticles[domain].forEach(article => {
           const articleDiv = document.createElement('div');
           articleDiv.style.display = 'flex';
           articleDiv.style.flexDirection = 'column'; // Column layout for image and text
-          articleDiv.style.width = `${IMG_SIZE + 300}px`; // Fixed width based on image size + 300px
+          articleDiv.style.width = `${IMG_SIZE + 200}px`;
           articleDiv.style.marginBottom = '10px';
 
           // Create anchor for both image and article title
@@ -400,8 +412,11 @@
           // Append price to article div
           articleDiv.appendChild(priceDiv);
 
-          articlesList.appendChild(articleDiv);
+          articlesContainer.appendChild(articleDiv);
         });
+
+        domainGroup.appendChild(articlesContainer);
+        articlesList.appendChild(domainGroup);
       });
 
       articlesSection.appendChild(articlesList); // Append the scrollable content to the section
