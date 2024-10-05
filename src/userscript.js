@@ -272,32 +272,23 @@
     notDropshippingLink.style.textDecoration = 'underline';
     overlay.appendChild(notDropshippingLink);
 
+    // Modify the technosSection and articlesSection styling to ensure consistent width
+    const commonSectionStyle = `
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  width: 90%;
+  max-width: 90%;
+  min-height: 50px
+  padding: 20px;
+  color: white;
+  overflow-x: auto;
+`;
+
     if (technos && technos.length > 0) {
-      // Add explanation before the technologies section
-      const technosTitle = document.createElement('div');
-      technosTitle.style.fontSize = '1.8rem'; // Make the title larger
-      technosTitle.style.fontWeight = 'bold';
-      technosTitle.style.marginBottom = '10px';
-      technosTitle.style.color = 'white';
-      technosTitle.textContent = 'Technologies associées au dropshipping';
-
-      const technosExplanation = document.createElement('div');
-      technosExplanation.style.fontSize = '1rem';
-      technosExplanation.style.marginBottom = '20px';
-      technosExplanation.style.color = 'orange';
-      technosExplanation.textContent = 'Les technologies détectées sur ce site peuvent indiquer un lien avec des pratiques de dropshipping. Veuillez les vérifier attentivement.';
-
-      overlay.appendChild(technosTitle);
-      overlay.appendChild(technosExplanation);
-
-      // Create and append the technologies section
       const technosSection = document.createElement('div');
-      technosSection.style.textAlign = 'left';
-      technosSection.style.maxWidth = '80%';
-      technosSection.style.maxHeight = '50%';
-      technosSection.style.overflowY = 'auto';
-      technosSection.style.padding = '10px';
-      technosSection.style.color = 'white';
+      technosSection.style = commonSectionStyle;
 
       technos.forEach(tech => {
         const techDiv = document.createElement('div');
@@ -309,15 +300,9 @@
       overlay.appendChild(technosSection);
     }
 
-    // Show articles with images plainly (no collapse)
     if (similarArticles && similarArticles.length > 0) {
       const articlesSection = document.createElement('div');
-      articlesSection.style.textAlign = 'left';
-      articlesSection.style.maxWidth = '100%';
-      articlesSection.style.maxHeight = '50%';
-      articlesSection.style.overflowY = 'auto';
-      articlesSection.style.padding = '10px';
-      articlesSection.style.color = 'white';
+      articlesSection.style = commonSectionStyle; // Apply same style for consistency
 
       const groupedArticles = {};
 
@@ -331,9 +316,9 @@
         groupedArticles[apexDomain].push(article);
       });
 
-      // Add a title and warning note before the articles section
+      // Add title and warning before articles section
       const articlesTitle = document.createElement('div');
-      articlesTitle.style.fontSize = '1.8rem'; // Make the title larger
+      articlesTitle.style.fontSize = '1.8rem';
       articlesTitle.style.fontWeight = 'bold';
       articlesTitle.style.marginBottom = '10px';
       articlesTitle.style.color = 'white';
@@ -356,10 +341,10 @@
 
         groupedArticles[domain].forEach(article => {
           const articleDiv = document.createElement('div');
-          articleDiv.style.display = 'flex'; // Flex layout to align image and text
+          articleDiv.style.display = 'flex'; // Flex layout for image and text alignment
           articleDiv.style.marginBottom = '10px';
 
-          // Create the anchor element for the image and article title
+          // Create anchor for both image and article title
           const articleLink = document.createElement('a');
           articleLink.href = article.url;
           articleLink.style.color = 'white';
@@ -373,23 +358,21 @@
           img.style.height = `${IMG_SIZE}px`;
           img.style.marginRight = '20px';
 
-          // Append the image inside the link
+          // Append image inside the link
           articleLink.appendChild(img);
 
-          // Add the article title inside the same anchor tag
+          // Add the article title inside the link
           const articleText = document.createElement('span');
           articleText.innerHTML = `${article.title}`;
           articleLink.appendChild(articleText);
 
-          // Add the price below, outside the anchor tag, and style it larger
+          // Add the price below, outside the link
           const priceDiv = document.createElement('div');
           priceDiv.textContent = `${article.price}€`;
-          priceDiv.style.fontSize = '1.5rem'; // Bigger font size for price
-          priceDiv.style.color = 'white';
+          priceDiv.style.fontSize = '20px';
           priceDiv.style.fontWeight = 'bold';
-          priceDiv.style.marginTop = '5px';
 
-          // Append price below the article link
+          // Append price to article div
           articleDiv.appendChild(priceDiv);
 
           domainDiv.appendChild(articleDiv);
