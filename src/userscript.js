@@ -108,15 +108,17 @@
     // Calculate the dropshipping probability as a percentage
     const probability = (mark / 5) * 100;
 
-    // If probability is less than 50%, show a top banner instead of the full-screen overlay
+    // If probability is less than 50%, show a top banner with orange color
     if (probability < 50) {
+      const warningColor = 'orange'; // Orange for low probability warnings
+
       // Create a top banner
       const banner = document.createElement('div');
       banner.style.position = 'fixed';
       banner.style.top = '0';
       banner.style.left = '0';
       banner.style.width = '100vw';
-      banner.style.backgroundColor = 'rgba(255, 165, 0, 0.95)'; // Use orange color for a less intrusive warning
+      banner.style.backgroundColor = 'rgba(255, 165, 0, 0.95)'; // Orange background
       banner.style.color = 'black';
       banner.style.fontSize = '1.5rem';
       banner.style.display = 'flex';
@@ -125,9 +127,9 @@
       banner.style.padding = '10px 20px';
       banner.style.zIndex = '2147483647'; // Max z-index
 
-      // Add the warning text (in French) with an SVG icon
+      // Add the warning text with an orange SVG icon
       const warningText = document.createElement('div');
-      warningText.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="black" width="24px" height="24px" style="${iconStyle}"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg> ATTENTION: Ce site a ${probability}% de probabilité d'être un site de DROPSHIPPING!`;
+      warningText.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${warningColor}" width="24px" height="24px" style="${iconStyle}"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg> ATTENTION: Ce site a ${probability}% de probabilité d'être un site de DROPSHIPPING!`;
       warningText.style.color = 'black';
       banner.appendChild(warningText);
 
@@ -145,7 +147,10 @@
 
       // Append the banner to the body
       document.body.appendChild(banner);
+
     } else {
+      const warningColor = 'red'; // Red for high probability warnings
+
       // Use the full-screen overlay if the probability is 50% or more
       const overlay = document.createElement('div');
       overlay.style.position = 'fixed';
@@ -184,12 +189,12 @@
       probabilityText.style.fontSize = '5rem';
       probabilityText.style.fontWeight = 'bold';
       probabilityText.style.marginBottom = '20px';
-      probabilityText.style.color = 'white';
+      probabilityText.style.color = warningColor;  // Same color as warning
       overlay.appendChild(probabilityText);
 
-      // Add the warning text (in French) with an SVG icon
+      // Add the warning text (in French) with a red SVG icon
       const warningText = document.createElement('div');
-      warningText.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="48px" height="48px" style="${iconStyle}"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg> ATTENTION: Ce site a ${probability}% de probabilité d'être un site de DROPSHIPPING!`;
+      warningText.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${warningColor}" width="48px" height="48px" style="${iconStyle}"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg> ATTENTION: Ce site a ${probability}% de probabilité d'être un site de DROPSHIPPING!`;
       warningText.style.marginBottom = '20px';
       warningText.style.color = 'white';
       overlay.appendChild(warningText);
@@ -270,7 +275,7 @@
     // Add an event listener for the Escape key to close the overlay
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' || e.key === 'Esc') {
-        overlay.remove();
+        overlay?.remove();
       }
     });
   }
