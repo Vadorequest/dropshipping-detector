@@ -3,7 +3,7 @@
 // @namespace    http://tampermonkey.net/
 // @version      0.6
 // @description  Detect if the current site is a dropshipping website. Relies on "Antidrop.fr".
-// @author       [Ambroise Dhenain](https://ambroise.dhenain.fr/)
+// @author       Ambroise Dhenain - ambroise.dhenain.fr
 // @match        *://*/*
 // @grant        none
 // ==/UserScript==
@@ -11,8 +11,14 @@
 (function () {
   'use strict';
 
-  // Customizable probability threshold for showing full-screen warning
-  const PROBABILITY_THRESHOLD = 49; // If probability >= 50, full-screen overlay is shown, otherwise banner is shown
+  /**
+    Change this threshold to make the detector more or less aggressive based on the probability.
+   */
+  const PROBABILITY_THRESHOLD = 49;
+
+  /**
+    Change the image size of the articles.
+   */
   const IMG_SIZE = 150;
 
   const domainName = window.location.hostname;
