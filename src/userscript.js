@@ -187,7 +187,7 @@
     overlay.style.left = '0';
     overlay.style.width = '100vw';
     overlay.style.height = '100vh';
-    overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.95)';
+    overlay.style.backgroundColor = 'rgba(0, 0, 0, 100)';
     overlay.style.color = 'white';
     overlay.style.fontSize = '16px';
     overlay.style.display = 'flex';
@@ -274,6 +274,7 @@
     notDropshippingLink.style.textDecoration = 'underline';
     overlay.appendChild(notDropshippingLink);
 
+// Applying styles to the scrollable technos and articles sections
     const commonSectionStyle = `
   display: flex;
   flex-direction: column;
@@ -282,17 +283,21 @@
   width: 90%;
   padding: 20px;
   color: white;
-  flex-grow: 1; /* Allow both sections to share available space */
   overflow-y: auto;
-  max-height: 50vh; /* Ensure each section takes no more than 40% of the viewport height */
+  max-height: 40vh; /* Ensure the scrollable content takes a part of the viewport height */
 `;
 
-// Applying styles to technos section
+// Technos Section
     if (technos && technos.length > 0) {
       const technosSection = document.createElement('div');
       technosSection.style = commonSectionStyle;
 
-      // Add an explanation above the technos section
+      // Add the title and warning (sticky at the top)
+      const technosTitleContainer = document.createElement('div');
+      technosTitleContainer.style.position = 'sticky'; // Sticky to keep it visible
+      technosTitleContainer.style.top = '0'; // Stick at the top of the section
+      technosTitleContainer.style.backgroundColor = 'rgba(0, 0, 0, 0.95)'; // Ensure it stands out with background
+
       const technosTitle = document.createElement('div');
       technosTitle.style.fontSize = '20px';
       technosTitle.style.fontWeight = 'bold';
@@ -306,36 +311,37 @@
       technosWarning.style.color = 'orange';
       technosWarning.textContent = 'Attention: Les technologies détectées sur ce site peuvent indiquer un lien avec des pratiques de dropshipping. Veuillez les vérifier attentivement.';
 
-      technosSection.appendChild(technosTitle);
-      technosSection.appendChild(technosWarning);
+      technosTitleContainer.appendChild(technosTitle);
+      technosTitleContainer.appendChild(technosWarning);
+      technosSection.appendChild(technosTitleContainer); // Append sticky title/warning
+
+      // Add the scrollable list of technos
+      const technosList = document.createElement('div');
+      technosList.style.overflowY = 'auto'; // Make only the list scrollable
+      technosList.style.maxHeight = '40vh'; // Limit the height to avoid overflowing
 
       technos.forEach(tech => {
         const techDiv = document.createElement('div');
         techDiv.style.marginBottom = '10px';
         techDiv.innerHTML = `<strong>${tech.name}:</strong> ${tech.description}`;
-        technosSection.appendChild(techDiv);
+        technosList.appendChild(techDiv);
       });
 
+      technosSection.appendChild(technosList); // Append the scrollable content to the section
       overlay.appendChild(technosSection);
     }
 
+// Articles Section
     if (similarArticles && similarArticles.length > 0) {
       const articlesSection = document.createElement('div');
       articlesSection.style = commonSectionStyle;
 
-      const groupedArticles = {};
+      // Add the title and warning (sticky at the top)
+      const articlesTitleContainer = document.createElement('div');
+      articlesTitleContainer.style.position = 'sticky'; // Sticky to keep it visible
+      articlesTitleContainer.style.top = '0'; // Stick at the top of the section
+      articlesTitleContainer.style.backgroundColor = 'rgba(0, 0, 0, 0.95)'; // Ensure it stands out with background
 
-      similarArticles.forEach(article => {
-        const apexDomain = getApexDomain(article.url);
-
-        if (!groupedArticles[apexDomain]) {
-          groupedArticles[apexDomain] = [];
-        }
-
-        groupedArticles[apexDomain].push(article);
-      });
-
-      // Add title and warning before articles section
       const articlesTitle = document.createElement('div');
       articlesTitle.style.fontSize = '1.8rem';
       articlesTitle.style.fontWeight = 'bold';
@@ -349,14 +355,32 @@
       articlesWarning.style.color = 'orange';
       articlesWarning.textContent = 'Attention: Les correspondances peuvent ne pas être exactes. Certains articles peuvent ne pas être liés directement à ce site.';
 
-      articlesSection.appendChild(articlesTitle);
-      articlesSection.appendChild(articlesWarning);
+      articlesTitleContainer.appendChild(articlesTitle);
+      articlesTitleContainer.appendChild(articlesWarning);
+      articlesSection.appendChild(articlesTitleContainer); // Append sticky title/warning
+
+      // Add the scrollable list of articles
+      const articlesList = document.createElement('div');
+      articlesList.style.overflowY = 'auto'; // Make only the list scrollable
+      articlesList.style.maxHeight = '40vh'; // Limit the height to avoid overflowing
+
+      const groupedArticles = {};
+
+      similarArticles.forEach(article => {
+        const apexDomain = getApexDomain(article.url);
+
+        if (!groupedArticles[apexDomain]) {
+          groupedArticles[apexDomain] = [];
+        }
+
+        groupedArticles[apexDomain].push(article);
+      });
 
       Object.keys(groupedArticles).forEach(domain => {
         const domainDiv = document.createElement('div');
         domainDiv.style.marginBottom = '15px';
         domainDiv.innerHTML = `<strong>${domain}</strong>`;
-        articlesSection.appendChild(domainDiv);
+        articlesList.appendChild(domainDiv);
 
         groupedArticles[domain].forEach(article => {
           const articleDiv = document.createElement('div');
@@ -398,6 +422,7 @@
         });
       });
 
+      articlesSection.appendChild(articlesList); // Append the scrollable content to the section
       overlay.appendChild(articlesSection);
     }
 
