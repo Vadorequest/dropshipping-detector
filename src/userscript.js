@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Dropshipping Detector
 // @namespace    http://tampermonkey.net/
-// @version      0.5
+// @version      0.6
 // @description  Detect if the current site is a dropshipping website. Relies on "Antidrop.fr".
 // @author       [Ambroise Dhenain](https://ambroise.dhenain.fr/)
 // @match        *://*/*
@@ -13,6 +13,7 @@
 
   // Customizable probability threshold for showing full-screen warning
   const PROBABILITY_THRESHOLD = 49; // If probability >= 50, full-screen overlay is shown, otherwise banner is shown
+  const IMG_SIZE = 150;
 
   const domainName = window.location.hostname;
 
@@ -134,7 +135,7 @@
     banner.style.width = '100vw';
     banner.style.backgroundColor = 'rgba(255, 165, 0, 0.95)'; // Orange background
     banner.style.color = 'black';
-    banner.style.fontSize = '1.5rem';
+    banner.style.fontSize = '16px';
     banner.style.display = 'flex';
     banner.style.alignItems = 'center';
     banner.style.justifyContent = 'space-between';
@@ -153,7 +154,7 @@
     closeButton.style.background = 'transparent';
     closeButton.style.border = 'none';
     closeButton.style.cursor = 'pointer';
-    closeButton.style.fontSize = '1.5rem';
+    closeButton.style.fontSize = '16px';
     closeButton.addEventListener('click', () => {
       banner.remove();
     });
@@ -188,7 +189,7 @@
     overlay.style.height = '100vh';
     overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.95)';
     overlay.style.color = 'white';
-    overlay.style.fontSize = '2rem';
+    overlay.style.fontSize = '24px';
     overlay.style.display = 'flex';
     overlay.style.flexDirection = 'column';
     overlay.style.alignItems = 'center';
@@ -201,7 +202,7 @@
     closeButton.style.position = 'absolute';
     closeButton.style.top = '10px';
     closeButton.style.right = '20px';
-    closeButton.style.fontSize = '1.5rem';
+    closeButton.style.fontSize = '16px';
     closeButton.style.color = 'white';
     closeButton.style.background = 'transparent';
     closeButton.style.border = 'none';
@@ -214,7 +215,7 @@
     // Add the probability at the top (in a big way)
     const probabilityText = document.createElement('div');
     probabilityText.textContent = `${probability}%`;
-    probabilityText.style.fontSize = '5rem';
+    probabilityText.style.fontSize = '40px';
     probabilityText.style.fontWeight = 'bold';
     probabilityText.style.marginBottom = '20px';
     probabilityText.style.color = warningColor;  // Same color as warning
@@ -239,7 +240,7 @@
     // Add a reference to antidrop.fr
     const sourceText = document.createElement('div');
     sourceText.innerHTML = 'Résultat fourni par <a href="https://antidrop.fr" target="_blank" style="color: white; text-decoration: underline;">antidrop.fr</a>';
-    sourceText.style.fontSize = '1rem';
+    sourceText.style.fontSize = '16px';
     sourceText.style.marginBottom = '20px';
     sourceText.style.color = 'white';
     overlay.appendChild(sourceText);
@@ -254,36 +255,26 @@
       minute: 'numeric'
     });
     lastSearchText.innerHTML = `Dernière mise à jour sur la base de données AntiDrop: <br />${formattedDate}`;
-    lastSearchText.style.fontSize = '1.2rem';
+    lastSearchText.style.fontSize = '16px';
     lastSearchText.style.marginBottom = '20px';
     lastSearchText.style.color = 'white';
     overlay.appendChild(lastSearchText);
 
-// Add bottom-left "Ce site n'est pas du dropshipping" link
+    // Add bottom-left "Ce site n'est pas du dropshipping" link
     const notDropshippingLink = document.createElement('a');
     notDropshippingLink.href = 'https://antidrop.fr/contact';
     notDropshippingLink.textContent = 'Ce site n\'est pas du dropshipping';
-    notDropshippingLink.target = '_blank';  // Open in a new tab
+    notDropshippingLink.target = '_blank';
     notDropshippingLink.style.position = 'absolute';
-    notDropshippingLink.style.bottom = '10px';  // Positioned at the bottom
-    notDropshippingLink.style.left = '10px';   // Positioned at the left
+    notDropshippingLink.style.bottom = '10px';
+    notDropshippingLink.style.left = '10px';
     notDropshippingLink.style.color = 'white';
     notDropshippingLink.style.textDecoration = 'underline';
     overlay.appendChild(notDropshippingLink);
 
-    // Create a collapsible section for technologies if any
+    // Show technologies plainly (no collapse)
     if (technos && technos.length > 0) {
-      const detailsButton = document.createElement('button');
-      detailsButton.textContent = `Voir les technologies associées au dropshipping utilisées par ${domainName}`;
-      detailsButton.style.marginBottom = '10px';
-      detailsButton.style.fontSize = '1.5rem';
-      detailsButton.style.color = 'white';
-      detailsButton.style.background = 'transparent';
-      detailsButton.style.cursor = 'pointer';
-      overlay.appendChild(detailsButton);
-
       const technosSection = document.createElement('div');
-      technosSection.style.display = 'none';
       technosSection.style.textAlign = 'left';
       technosSection.style.maxWidth = '80%';
       technosSection.style.maxHeight = '50%';
@@ -297,79 +288,99 @@
         techDiv.innerHTML = `<strong>${tech.name}:</strong> ${tech.description}`;
         technosSection.appendChild(techDiv);
       });
-
       overlay.appendChild(technosSection);
-
-      // Toggle the display of the technologies section
-      detailsButton.addEventListener('click', () => {
-        technosSection.style.display = technosSection.style.display === 'none' ? 'block' : 'none';
-      });
     }
 
-    // Add "Voir les articles" collapsed section for similar articles
+    // Show articles with images plainly (no collapse)
     if (similarArticles && similarArticles.length > 0) {
-      const articlesButton = document.createElement('button');
-      articlesButton.textContent = 'Voir les articles';
-      articlesButton.style.marginBottom = '10px';
-      articlesButton.style.fontSize = '1.5rem';
-      articlesButton.style.color = 'white';
-      articlesButton.style.background = 'transparent';
-      articlesButton.style.border = '1px solid white';
-      articlesButton.style.cursor = 'pointer';
-      overlay.appendChild(articlesButton);
-
       const articlesSection = document.createElement('div');
-      articlesSection.style.display = 'none';
       articlesSection.style.textAlign = 'left';
-      articlesSection.style.maxWidth = '80%';
+      articlesSection.style.maxWidth = '100%';
       articlesSection.style.maxHeight = '50%';
       articlesSection.style.overflowY = 'auto';
-      articlesSection.style.border = '1px solid white';
       articlesSection.style.padding = '10px';
       articlesSection.style.color = 'white';
 
-      const groupedArticles = [];
+      const groupedArticles = {};
 
       similarArticles.forEach(article => {
-        // Extract apex domain instead of subdomain
         const apexDomain = getApexDomain(article.url);
 
-        // If the domain doesn't exist in the grouping object, initialize it
         if (!groupedArticles[apexDomain]) {
           groupedArticles[apexDomain] = [];
         }
 
-        // Push the article to the domain group
         groupedArticles[apexDomain].push(article);
       });
 
-      // Now iterate over the grouped articles and display them
+      // Add a title and warning note before the articles section
+      const articlesTitle = document.createElement('div');
+      articlesTitle.style.fontSize = '1.8rem'; // Make the title larger
+      articlesTitle.style.fontWeight = 'bold';
+      articlesTitle.style.marginBottom = '10px';
+      articlesTitle.style.color = 'white';
+      articlesTitle.textContent = 'Articles similaires trouvés sur des sites de dropshipping connus';
+
+      const articlesWarning = document.createElement('div');
+      articlesWarning.style.fontSize = '1rem';
+      articlesWarning.style.marginBottom = '20px';
+      articlesWarning.style.color = 'orange';
+      articlesWarning.textContent = 'Attention: Les correspondances peuvent ne pas être exactes. Certains articles peuvent ne pas être liés directement à ce site.';
+
+      articlesSection.appendChild(articlesTitle);
+      articlesSection.appendChild(articlesWarning);
+
       Object.keys(groupedArticles).forEach(domain => {
-        // Create a section for each domain
         const domainDiv = document.createElement('div');
         domainDiv.style.marginBottom = '15px';
         domainDiv.innerHTML = `<strong>${domain}</strong>`;
         articlesSection.appendChild(domainDiv);
 
-        // Display articles for this domain
         groupedArticles[domain].forEach(article => {
           const articleDiv = document.createElement('div');
+          articleDiv.style.display = 'flex'; // Flex layout to align image and text
           articleDiv.style.marginBottom = '10px';
-          articleDiv.innerHTML = `<a href="${article.url}" target="_blank" style="color: white; text-decoration: underline;">(${article.price}€) ${article.title}</a>`;
+
+          // Create the anchor element for the image and article title
+          const articleLink = document.createElement('a');
+          articleLink.href = article.url;
+          articleLink.style.color = 'white';
+          articleLink.style.textDecoration = 'underline';
+          articleLink.target = '_blank';
+          articleDiv.appendChild(articleLink);
+
+          const img = document.createElement('img');
+          img.src = article.images[0];
+          img.style.width = `${IMG_SIZE}px`;
+          img.style.height = `${IMG_SIZE}px`;
+          img.style.marginRight = '20px';
+
+          // Append the image inside the link
+          articleLink.appendChild(img);
+
+          // Add the article title inside the same anchor tag
+          const articleText = document.createElement('span');
+          articleText.innerHTML = `${article.title}`;
+          articleLink.appendChild(articleText);
+
+          // Add the price below, outside the anchor tag, and style it larger
+          const priceDiv = document.createElement('div');
+          priceDiv.textContent = `${article.price}€`;
+          priceDiv.style.fontSize = '1.5rem'; // Bigger font size for price
+          priceDiv.style.color = 'white';
+          priceDiv.style.fontWeight = 'bold';
+          priceDiv.style.marginTop = '5px';
+
+          // Append price below the article link
+          articleDiv.appendChild(priceDiv);
+
           domainDiv.appendChild(articleDiv);
         });
       });
 
-
       overlay.appendChild(articlesSection);
-
-      // Toggle the display of the articles section
-      articlesButton.addEventListener('click', () => {
-        articlesSection.style.display = articlesSection.style.display === 'none' ? 'block' : 'none';
-      });
     }
 
-    // Append overlay to the body
     document.body.appendChild(overlay);
 
     // Add an event listener for the Escape key to close the overlay
