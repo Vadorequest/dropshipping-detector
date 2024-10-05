@@ -230,42 +230,10 @@
     warningText.style.color = 'white';
     overlay.appendChild(warningText);
 
-    // Add the explanation of how the result was determined
-    const explanationText = document.createElement('div');
-    explanationText.innerHTML = `Le résultat ci-dessus est basé sur plusieurs facteurs, tels que les technologies utilisées par ce site, les produits vendus, et d'autres éléments techniques.<br><br>
-      Un pourcentage de 100% est généralement très fiable. Si vous avez des doutes, vous pouvez visiter <a href="https://antidrop.fr/contact" target="_blank" style="color: white; text-decoration: underline;">ce lien</a> pour plus de détails ou pour contester le résultat.`;
-    explanationText.style.marginBottom = '20px';
-    explanationText.style.textAlign = 'center';
-    explanationText.style.color = 'white';
-    overlay.appendChild(explanationText);
-
-    // Add a reference to antidrop.fr
-    const sourceText = document.createElement('div');
-    sourceText.innerHTML = 'Résultat fourni par <a href="https://antidrop.fr" target="_blank" style="color: white; text-decoration: underline;">antidrop.fr</a>';
-    sourceText.style.fontSize = '16px';
-    sourceText.style.marginBottom = '20px';
-    sourceText.style.color = 'white';
-    overlay.appendChild(sourceText);
-
-    // Add the "lastSearchDate" using datetime formatting
-    const lastSearchText = document.createElement('div');
-    const formattedDate = new Date(lastSearchDate).toLocaleDateString('fr-FR', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: 'numeric'
-    });
-    lastSearchText.innerHTML = `Dernière mise à jour sur la base de données AntiDrop: <br />${formattedDate}`;
-    lastSearchText.style.fontSize = '16px';
-    lastSearchText.style.marginBottom = '20px';
-    lastSearchText.style.color = 'white';
-    overlay.appendChild(lastSearchText);
-
     // Add bottom-left "Ce site n'est pas du dropshipping" link
     const notDropshippingLink = document.createElement('a');
     notDropshippingLink.href = 'https://antidrop.fr/contact';
-    notDropshippingLink.textContent = 'Ce site n\'est pas du dropshipping';
+    notDropshippingLink.textContent = 'Ce site n\'est pas du dropshipping !';
     notDropshippingLink.target = '_blank';
     notDropshippingLink.style.position = 'absolute';
     notDropshippingLink.style.bottom = '10px';
@@ -318,7 +286,7 @@
       // Add the scrollable list of technos
       const technosList = document.createElement('div');
       technosList.style.overflowY = 'auto'; // Make only the list scrollable
-      technosList.style.maxHeight = '40vh'; // Limit the height to avoid overflowing
+      technosList.style.maxHeight = '30vh';
 
       technos.forEach(tech => {
         const techDiv = document.createElement('div');
@@ -331,7 +299,6 @@
       overlay.appendChild(technosSection);
     }
 
-// Articles Section
     if (similarArticles && similarArticles.length > 0) {
       const articlesSection = document.createElement('div');
       articlesSection.style = commonSectionStyle;
@@ -347,13 +314,13 @@
       articlesTitle.style.fontWeight = 'bold';
       articlesTitle.style.marginBottom = '10px';
       articlesTitle.style.color = 'white';
-      articlesTitle.textContent = 'Articles similaires trouvés sur des sites de dropshipping connus';
+      articlesTitle.textContent = 'Articles similaires trouvés sur des sites de dropshipping';
 
       const articlesWarning = document.createElement('div');
       articlesWarning.style.fontSize = '14px';
       articlesWarning.style.marginBottom = '20px';
       articlesWarning.style.color = 'orange';
-      articlesWarning.textContent = 'Attention: Les correspondances peuvent ne pas être exactes. Certains articles peuvent ne pas être liés directement à ce site.';
+      articlesWarning.textContent = `Attention: Les correspondances peuvent ne pas être exactes. Certains articles ci-dessous  peuvent ne pas être vendus par ${domainName}. Veuillez les vérifier attentivement.`;
 
       articlesTitleContainer.appendChild(articlesTitle);
       articlesTitleContainer.appendChild(articlesWarning);
@@ -362,7 +329,7 @@
       // Add the scrollable list of articles
       const articlesList = document.createElement('div');
       articlesList.style.overflowY = 'auto'; // Make only the list scrollable
-      articlesList.style.maxHeight = '40vh'; // Limit the height to avoid overflowing
+      articlesList.style.maxHeight = '60vh';
 
       const groupedArticles = {};
 
@@ -426,6 +393,29 @@
       overlay.appendChild(articlesSection);
     }
 
+    const explanationSection = document.createElement('div');
+    explanationSection.style.textAlign = 'center';
+    explanationSection.style.marginTop = '40px'; // Add some spacing from the previous sections
+    explanationSection.style.color = 'white';
+
+    const explanationText = document.createElement('div');
+    explanationText.innerHTML = `
+    <p>Le résultat ci-dessus est basé sur plusieurs facteurs, tels que les technologies utilisées par ce site, les produits vendus, et d'autres éléments techniques.</p>
+    <p>Un pourcentage de 100% est généralement très fiable. Si vous avez des doutes, vous pouvez visiter <a href="https://antidrop.fr/contact" target="_blank" style="color: white; text-decoration: underline;">ce lien</a> pour plus de détails ou pour contester le résultat.</p>
+    <p>Résultat fourni par <a href="https://antidrop.fr" target="_blank" style="color: white; text-decoration: underline;">antidrop.fr</a></p>
+    <p>Dernière mise à jour sur la base de données AntiDrop: ${new Date(lastSearchDate).toLocaleDateString('fr-FR', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric'
+    })}</p>
+`;
+
+    explanationSection.appendChild(explanationText);
+
+    overlay.appendChild(explanationSection);
+
     // Add disclaimer at the bottom
     const disclaimer = document.createElement('div');
     disclaimer.style.position = 'absolute';
@@ -434,7 +424,7 @@
     disclaimer.style.fontSize = '12px';
     disclaimer.style.color = 'gray';
     disclaimer.style.textAlign = 'center';
-    disclaimer.innerHTML = 'Avertissement : Cet outil est destiné à informer les utilisateurs sur les sites potentiellement liés au dropshipping. Il n\'est pas garanti à 100% précis. Vous pouvez consulter les détails complets sur la page <a href="https://antidrop.fr/disclaimer" style="color: white; text-decoration: underline;" target="_blank">d\'antidrop.fr</a>.';
+    disclaimer.innerHTML = 'Avertissement : Cet outil est destiné à informer les utilisateurs sur les sites potentiellement liés au dropshipping. Il n\'est pas garanti à 100% précis. Vous pouvez consulter les détails complets sur la page <a href="https://antidrop.fr/disclaimer" style="color: white; text-decoration: underline; font-size: 12px" target="_blank">d\'antidrop.fr</a>.';
     overlay.appendChild(disclaimer);
 
     document.body.appendChild(overlay);
