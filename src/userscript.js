@@ -85,7 +85,12 @@
       .then(data => {
         if (data && data.mark > 0) {
           console.warn('[Dropshipping Detector] Dropshipping site detected.');
-          showDropshippingWarning(data.mark, data.website.technos);
+          showDropshippingWarning(
+            data?.mark ?? 0,
+            data?.website?.technos ?? [],
+            data?.similarArticles ?? [],
+            data?.lastSearchDate ?? null
+          );
         } else {
           console.debug('[Dropshipping Detector] No dropshipping detected.');
         }
@@ -96,12 +101,9 @@
   }
 
   // Show a fullscreen warning when dropshipping is detected
-  function showDropshippingWarning(mark, technos) {
+  function showDropshippingWarning(mark, technos, similarArticles, lastSearchDate) {
     // Calculate the dropshipping probability as a percentage
     const probability = (mark / 5) * 100;
-
-    // Display an alert
-    alert(`Warning: This site has been flagged as a dropshipping website with ${probability}% probability!`);
 
     // Create a full-screen overlay
     const overlay = document.createElement('div');
@@ -110,52 +112,97 @@
     overlay.style.left = '0';
     overlay.style.width = '100vw';
     overlay.style.height = '100vh';
-    overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+    overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.95)';
     overlay.style.color = 'white';
     overlay.style.fontSize = '2rem';
     overlay.style.display = 'flex';
     overlay.style.flexDirection = 'column';
     overlay.style.alignItems = 'center';
     overlay.style.justifyContent = 'center';
-    overlay.style.zIndex = '9999';
-    overlay.style.padding = '20px';
+    overlay.style.zIndex = '2147483647'; // Max z-index
 
-    // Add the warning text
+    // Add a close button to remove the overlay
+    const closeButton = document.createElement('button');
+    closeButton.textContent = 'Fermer';
+    closeButton.style.position = 'absolute';
+    closeButton.style.top = '10px';
+    closeButton.style.right = '20px';
+    closeButton.style.fontSize = '1.5rem';
+    closeButton.style.cursor = 'pointer';
+    closeButton.addEventListener('click', () => {
+      overlay.remove();
+    });
+    overlay.appendChild(closeButton);
+
+    // Add the probability at the top (in a big way)
+    const probabilityText = document.createElement('div');
+    probabilityText.textContent = `${probability}%`;
+    probabilityText.style.fontSize = '5rem';
+    probabilityText.style.fontWeight = 'bold';
+    probabilityText.style.marginBottom = '20px';
+    overlay.appendChild(probabilityText);
+
+    // Add the warning text (in French)
     const warningText = document.createElement('div');
-    warningText.textContent = `⚠️ WARNING: This site has a ${probability}% probability of being a DROPSHIPPING website!`;
+    warningText.textContent = `⚠️ ATTENTION: Ce site a ${probability}% de probabilité d'être un site de DROPSHIPPING!`;
     warningText.style.marginBottom = '20px';
     overlay.appendChild(warningText);
 
-    // Create a collapsible section for technologies
-    const detailsButton = document.createElement('button');
-    detailsButton.textContent = 'Show Details';
-    detailsButton.style.marginBottom = '10px';
-    detailsButton.style.fontSize = '1.5rem';
-    detailsButton.style.cursor = 'pointer';
-    overlay.appendChild(detailsButton);
+    // Add a reference to antidrop.fr
+    const sourceText = document.createElement('div');
+    sourceText.innerHTML = 'Résultat fourni par <a href="antidrop.fr">antidrop.fr</a>';
+    sourceText.style.fontSize = '1rem';
+    sourceText.style.marginBottom = '20px';
+    overlay.appendChild(sourceText);
 
-    const technosSection = document.createElement('div');
-    technosSection.style.display = 'none';
-    technosSection.style.textAlign = 'left';
-    technosSection.style.maxWidth = '80%';
-    technosSection.style.maxHeight = '50%';
-    technosSection.style.overflowY = 'auto';
-    technosSection.style.border = '1px solid white';
-    technosSection.style.padding = '10px';
+    // Add the "lastSearchDate"
+    const lastSearchText = document.createElement('div');
+    const formattedDate = new Date(lastSearchDate).toLocaleDateString('fr-FR');
+    lastSearchText.textContent = `Dernière mise à jour de la base de données AntiDrop: ${formattedDate}`;
+    lastSearchText.style.fontSize = '1.2rem';
+    lastSearchText.style.marginBottom = '20px';
+    overlay.appendChild(lastSearchText);
 
-    technos.forEach(tech => {
-      const techDiv = document.createElement('div');
-      techDiv.style.marginBottom = '10px';
-      techDiv.innerHTML = `<strong>${tech.name}:</strong> ${tech.description}`;
-      technosSection.appendChild(techDiv);
-    });
+    // Create a collapsible section for technologies if any
+    if (technos && technos.length > 0) {
+      const detailsButton = document.createElement('button');
+      detailsButton.textContent = 'Voir les détails';
+      detailsButton.style.marginBottom = '10px';
+      detailsButton.style.fontSize = '1.5rem';
+      detailsButton.style.cursor = 'pointer';
+      overlay.appendChild(detailsButton);
 
-    overlay.appendChild(technosSection);
+      const technosSection = document.createElement('div');
+      technosSection.style.display = 'none';
+      technosSection.style.textAlign = 'left';
+      technosSection.style.maxWidth = '80%';
+      technosSection.style.maxHeight = '50%';
+      technosSection.style.overflowY = 'auto';
+      technosSection.style.border = '1px solid white';
+      technosSection.style.padding = '10px';
 
-    // Toggle the display of the technologies section
-    detailsButton.addEventListener('click', () => {
-      technosSection.style.display = technosSection.style.display === 'none' ? 'block' : 'none';
-    });
+      technos.forEach(tech => {
+        const techDiv = document.createElement('div');
+        techDiv.style.marginBottom = '10px';
+        techDiv.innerHTML = `<strong>${tech.name}:</strong> ${tech.description}`;
+        technosSection.appendChild(techDiv);
+      });
+
+      overlay.appendChild(technosSection);
+
+      // Toggle the display of the technologies section
+      detailsButton.addEventListener('click', () => {
+        technosSection.style.display = technosSection.style.display === 'none' ? 'block' : 'none';
+      });
+    }
+
+    // Add similar articles count and link if any
+    if (similarArticles && similarArticles.length > 0) {
+      const articlesText = document.createElement('div');
+      articlesText.innerHTML = `Nombre d'articles similaires: ${similarArticles.length} <br/> <a href="${similarArticles[0]}" target="_blank" style="color: #fff; text-decoration: underline;">Voir le premier article</a>`;
+      articlesText.style.marginTop = '20px';
+      overlay.appendChild(articlesText);
+    }
 
     // Append overlay to the body
     document.body.appendChild(overlay);
