@@ -272,23 +272,40 @@
     notDropshippingLink.style.textDecoration = 'underline';
     overlay.appendChild(notDropshippingLink);
 
-    // Modify the technosSection and articlesSection styling to ensure consistent width
     const commonSectionStyle = `
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;
   width: 90%;
-  max-width: 90%;
-  min-height: 50px
   padding: 20px;
   color: white;
-  overflow-x: auto;
+  flex-grow: 1; /* Allow both sections to share available space */
+  overflow-y: auto;
+  max-height: 50vh; /* Ensure each section takes no more than 40% of the viewport height */
 `;
 
+// Applying styles to technos section
     if (technos && technos.length > 0) {
       const technosSection = document.createElement('div');
       technosSection.style = commonSectionStyle;
+
+      // Add an explanation above the technos section
+      const technosTitle = document.createElement('div');
+      technosTitle.style.fontSize = '20px';
+      technosTitle.style.fontWeight = 'bold';
+      technosTitle.style.marginBottom = '10px';
+      technosTitle.style.color = 'white';
+      technosTitle.textContent = 'Technologies associées au dropshipping';
+
+      const technosWarning = document.createElement('div');
+      technosWarning.style.fontSize = '14px';
+      technosWarning.style.marginBottom = '20px';
+      technosWarning.style.color = 'orange';
+      technosWarning.textContent = 'Attention: Les technologies détectées sur ce site peuvent indiquer un lien avec des pratiques de dropshipping. Veuillez les vérifier attentivement.';
+
+      technosSection.appendChild(technosTitle);
+      technosSection.appendChild(technosWarning);
 
       technos.forEach(tech => {
         const techDiv = document.createElement('div');
@@ -302,7 +319,7 @@
 
     if (similarArticles && similarArticles.length > 0) {
       const articlesSection = document.createElement('div');
-      articlesSection.style = commonSectionStyle; // Apply same style for consistency
+      articlesSection.style = commonSectionStyle;
 
       const groupedArticles = {};
 
@@ -325,7 +342,7 @@
       articlesTitle.textContent = 'Articles similaires trouvés sur des sites de dropshipping connus';
 
       const articlesWarning = document.createElement('div');
-      articlesWarning.style.fontSize = '1rem';
+      articlesWarning.style.fontSize = '14px';
       articlesWarning.style.marginBottom = '20px';
       articlesWarning.style.color = 'orange';
       articlesWarning.textContent = 'Attention: Les correspondances peuvent ne pas être exactes. Certains articles peuvent ne pas être liés directement à ce site.';
