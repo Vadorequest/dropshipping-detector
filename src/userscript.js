@@ -381,6 +381,17 @@
       overlay.appendChild(articlesSection);
     }
 
+    // Add disclaimer at the bottom
+    const disclaimer = document.createElement('div');
+    disclaimer.style.position = 'absolute';
+    disclaimer.style.bottom = '10px';
+    disclaimer.style.right = '10px';
+    disclaimer.style.fontSize = '12px';
+    disclaimer.style.color = 'gray';
+    disclaimer.style.textAlign = 'center';
+    disclaimer.innerHTML = 'Disclaimer: This detection is provided as a tool to inform users about potential dropshipping websites. It is not 100% accurate. Full details can be found on the <a href="https://antidrop.fr/disclaimer" style="color: white; text-decoration: underline;" target="_blank">antidrop.fr disclaimer</a>.';
+    overlay.appendChild(disclaimer);
+
     document.body.appendChild(overlay);
 
     // Add an event listener for the Escape key to close the overlay
