@@ -244,12 +244,12 @@
 
       <!-- Update information -->
       <div style="margin-top: 40px; text-align: center;">
-        <p>Le résultat ci-dessus est basé sur plusieurs facteurs, tels que les technologies utilisées par ce site, les produits vendus, et d'autres éléments techniques.</p>
+        <p>Le résultat ci-dessus est basé sur plusieurs facteurs, tels que les technologies utilisées par ${domainName}, les produits vendus, et d'autres éléments techniques.</p>
       </div>
 
       <!-- Disclaimer at the bottom -->
       <div style="position: relative; width: 100%; margin-top: 20px;">
-        <div style="position: absolute; bottom: 10px; right: 10px; font-size: 12px; color: gray; text-align: center;">
+        <div style="position: absolute; bottom: 10px; right: 10px; font-size: 12px; color: lightgray; text-align: center;">
           Avertissement : Cet outil est destiné à informer les utilisateurs sur les sites potentiellement liés au dropshipping. 
           Il n'est pas garanti à 100% précis. Vous pouvez consulter les détails complets sur la page 
           <a href="https://antidrop.fr/disclaimer" style="color: white; text-decoration: underline; font-size: 12px" target="_blank">
