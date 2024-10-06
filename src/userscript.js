@@ -217,8 +217,8 @@
       <!-- Technologies section -->
       ${technos && technos.length > 0 ? `
         <div style="width: 100%;">
-          <h2 style="font-size: 1.8rem; font-weight: bold; margin-bottom: 10px; text-align: left;">Technologies associées au dropshipping</h2>
-          <p style="color: orange; text-align: left;">Attention: Les technologies détectées sur ce site peuvent indiquer un lien avec des pratiques de dropshipping.</p>
+          <h2 style="font-size: 1.8rem; font-weight: bold; margin-bottom: 10px; text-align: left; color: white;">Technologies associées au dropshipping</h2>
+          <p style="color: orange; text-align: left;">Attention: Certaines technologies détectées sur ce site peuvent indiquer un lien avec des pratiques de dropshipping.</p>
           ${technos.map(tech => `<div style="text-align: left;"><strong>${tech.name}:</strong> ${tech.description}</div>`).join('')}
         </div>
       ` : ''}
@@ -226,8 +226,8 @@
       <!-- Articles section -->
       ${similarArticles && similarArticles.length > 0 ? `
         <div style="width: 100%; margin-top: 20px;">
-          <h2 style="font-size: 1.8rem; font-weight: bold; margin-bottom: 10px; text-align: left;">Articles similaires trouvés sur des sites de dropshipping</h2>
-          <p style="color: orange; text-align: left;">Attention: Les correspondances peuvent ne pas être exactes. Veuillez les vérifier attentivement.</p>
+          <h2 style="font-size: 1.8rem; font-weight: bold; margin-bottom: 10px; text-align: left; color: white;">Articles similaires trouvés sur des sites de dropshipping</h2>
+          <p style="color: orange; text-align: left;">Important: Les correspondances ci-dessous peuvent être incorrectes. Le système de AntiDrop fonctionne notamment par comparaison d'images, qui n'est pas fiable à 100%. </p>
           ${getArticlesList(similarArticles)}
         </div>
       ` : ''}
@@ -236,6 +236,17 @@
       <div style="margin-top: 40px; text-align: center;">
         <p>Le résultat ci-dessus est basé sur plusieurs facteurs, tels que les technologies utilisées par ce site, les produits vendus, et d'autres éléments techniques.</p>
         <p>Dernière mise à jour sur la base de données AntiDrop: ${new Date(lastSearchDate).toLocaleDateString('fr-FR')}</p>
+      </div>
+
+      <!-- Disclaimer at the bottom -->
+      <div style="position: relative; width: 100%; margin-top: 20px;">
+        <div style="position: absolute; bottom: 10px; right: 10px; font-size: 12px; color: gray; text-align: center;">
+          Avertissement : Cet outil est destiné à informer les utilisateurs sur les sites potentiellement liés au dropshipping. 
+          Il n'est pas garanti à 100% précis. Vous pouvez consulter les détails complets sur la page 
+          <a href="https://antidrop.fr/disclaimer" style="color: white; text-decoration: underline; font-size: 12px" target="_blank">
+            d'antidrop.fr
+          </a>.
+        </div>
       </div>
     </div>
   `;
