@@ -12,9 +12,10 @@
   'use strict';
 
   /**
-    Change this threshold to make the detector more or less aggressive based on the probability.
+    Change these thresholds to make the detector more or less aggressive based on the dropshipping probability.
    */
-  const PROBABILITY_THRESHOLD = 49;
+  const PROBABILITY_THRESHOLD_BANNER = 50; // Lower than that number, no warning will show
+  const PROBABILITY_THRESHOLD_OVERLAY = 90; // Lower than that number, Banner warning will show. Higher or equal, overlay will show
 
   /**
     Change the image size of the articles.
@@ -79,7 +80,7 @@
   function callAntidropAPI() {
     const apiUrl = 'https://antidrop.fr/api/scan';
     const currentUrl = window.location.href;
-    const language = 'fr'; // Language can be adjusted as needed
+    const language = 'fr'; // AntiDrop only support "fr" at this time
 
     // Prepare request payload
     const payload = new URLSearchParams();
@@ -115,16 +116,21 @@
       });
   }
 
-  // Show a fullscreen warning when dropshipping is detected
   function showDropshippingWarning(mark, technos, similarArticles, lastSearchDate) {
-    // Calculate the dropshipping probability as a percentage
     const probability = (mark / 5) * 100;
 
-    // If probability is less than the threshold, show the top banner
-    if (probability <= PROBABILITY_THRESHOLD) {
+    // If probability is less than the banner threshold, do nothing
+    if (probability < PROBABILITY_THRESHOLD_BANNER) {
+      console.debug('[Dropshipping Detector] Probability below threshold, no warning displayed.');
+      return;
+    }
+
+    // If probability is between 50% and 89%, show the banner
+    if (probability >= PROBABILITY_THRESHOLD_BANNER && probability < PROBABILITY_THRESHOLD_OVERLAY) {
       showTopBannerWarning(probability);
-    } else {
-      // Otherwise, show the full-screen overlay
+    }
+    // If probability is 90% or higher, show the full overlay
+    else if (probability >= PROBABILITY_THRESHOLD_OVERLAY) {
       showFullScreenWarning(probability, technos, similarArticles, lastSearchDate);
     }
   }
