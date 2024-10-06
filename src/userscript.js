@@ -261,6 +261,16 @@
     const overlay = document.createElement('div');
     overlay.innerHTML = overlayHtml;
     document.body.appendChild(overlay);
+
+    // Add event listener for "Esc" key press
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' || e.key === 'Esc') {
+        const overlay = document.querySelector('[data-overlay]');
+        if (overlay) {
+          overlay.remove();
+        }
+      }
+    });
   }
 
   function getArticlesList(similarArticles) {
