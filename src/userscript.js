@@ -194,8 +194,10 @@
     <div style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0, 0, 0, 0.9); color: white; 
       display: flex; flex-direction: column; align-items: center; padding: 20px; z-index: 2147483647; overflow: auto;" data-overlay>
       
+      <a href="https://antidrop.fr/contact" target="_blank" style="color: white; text-decoration: underline; position: absolute; left: 10px; top: 10px;">Ce site n'est pas du dropshipping !</a>
+      
       <!-- Close button -->
-      <button style="position: absolute; top: 10px; right: 20px; background: transparent; border: none; cursor: pointer;"
+      <button style="position: absolute; top: 10px; right: 20px; background: transparent; border: none; cursor: pointer; color: white"
         onclick="this.closest('[data-overlay]').remove()">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="24px" height="24px" style="${iconStyle}">
           <path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 13.59L15.59 18 12 14.41 8.41 18 7 16.59 10.59 13 7 9.41 8.41 8 12 11.59 15.59 8 17 9.41 13.41 13 17 16.59z"/>
@@ -214,7 +216,7 @@
 
       <!-- Technologies section -->
       ${technos && technos.length > 0 ? `
-        <div style="width: 100%; max-width: 800px;">
+        <div style="width: 100%;">
           <h2 style="font-size: 1.8rem; font-weight: bold; margin-bottom: 10px; text-align: left;">Technologies associées au dropshipping</h2>
           <p style="color: orange; text-align: left;">Attention: Les technologies détectées sur ce site peuvent indiquer un lien avec des pratiques de dropshipping.</p>
           ${technos.map(tech => `<div style="text-align: left;"><strong>${tech.name}:</strong> ${tech.description}</div>`).join('')}
@@ -223,7 +225,7 @@
 
       <!-- Articles section -->
       ${similarArticles && similarArticles.length > 0 ? `
-        <div style="width: 100%; max-width: 800px; margin-top: 20px;">
+        <div style="width: 100%; margin-top: 20px;">
           <h2 style="font-size: 1.8rem; font-weight: bold; margin-bottom: 10px; text-align: left;">Articles similaires trouvés sur des sites de dropshipping</h2>
           <p style="color: orange; text-align: left;">Attention: Les correspondances peuvent ne pas être exactes. Veuillez les vérifier attentivement.</p>
           ${getArticlesList(similarArticles)}
@@ -234,7 +236,6 @@
       <div style="margin-top: 40px; text-align: center;">
         <p>Le résultat ci-dessus est basé sur plusieurs facteurs, tels que les technologies utilisées par ce site, les produits vendus, et d'autres éléments techniques.</p>
         <p>Dernière mise à jour sur la base de données AntiDrop: ${new Date(lastSearchDate).toLocaleDateString('fr-FR')}</p>
-        <a href="https://antidrop.fr/contact" target="_blank" style="color: white; text-decoration: underline;">Ce site n'est pas du dropshipping !</a>
       </div>
     </div>
   `;
