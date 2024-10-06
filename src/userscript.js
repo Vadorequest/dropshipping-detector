@@ -135,26 +135,48 @@
     }
   }
 
-  // Generate banner HTML
   function generateBannerHtml(probability, technos, similarArticles) {
     const warningColor = 'orange';
     return `
-      <div style="position: fixed; top: 0; left: 0; width: 100vw; background-color: rgba(255, 165, 0, 0.95); color: black;
-        font-size: 16px; display: flex; align-items: center; justify-content: space-between; padding: 10px 20px; z-index: 2147483647;">
-        <div>
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${warningColor}" width="24px" height="24px" style="${iconStyle}">
-            <path d="M0 0h24v24H0V0z" fill="none"/><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
-          </svg>
-          <span>ATTENTION: Ce site a ${probability}% de probabilité d'être un site de DROPSHIPPING!</span>
-          <span style="font-style: italic">(${technos?.length || 0} technos | ${similarArticles?.length || 0} articles)</span>
-          <a href="#" id="viewDetails" style="text-decoration: underline; color: black; font-weight: bold; margin-left: 20px;">Voir les détails</a>
-        </div>
-        <button style="background: transparent; border: none; cursor: pointer; font-size: 16px;">Réduire</button>
+    <div style="position: fixed; top: 0; left: 0; width: 100vw; background-color: rgba(255, 165, 0, 0.95); color: black;
+      font-size: 16px; display: flex; align-items: center; justify-content: space-between; padding: 10px 20px; z-index: 2147483647;"
+      data-banner>
+      
+      <div>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${warningColor}" width="24px" height="24px" style="${iconStyle}">
+          <path d="M0 0h24v24H0V0z" fill="none"/><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+        </svg>
+        <span>ATTENTION: Ce site a ${probability}% de probabilité d'être un site de DROPSHIPPING!</span>
+        <span style="font-style: italic">(${technos?.length || 0} technos | ${similarArticles?.length || 0} articles)</span>
+        <a href="#" id="viewDetails" style="text-decoration: underline; color: black; font-weight: bold; margin-left: 20px;">Voir les détails</a>
       </div>
-    `;
+
+      <!-- Réduire button -->
+      <button style="background: transparent; border: none; cursor: pointer; font-size: 16px;"
+        onclick="(function() {
+          const banner = this.closest('[data-banner]');
+          banner.style.opacity = '0.8';
+
+          // Add hover behavior only after shrinking
+          banner.onmouseenter = function() {
+            banner.style.height = 'auto';
+            banner.style.fontSize = '16px';
+            banner.style.padding = '10px 20px';
+            banner.style.opacity = '1';
+          };
+          banner.onmouseleave = function() {
+            banner.style.height = '20px';
+            banner.style.fontSize = '12px';
+            banner.style.padding = '2px 10px';
+            banner.style.opacity = '0.8';
+          };
+        }).call(this)">
+        Réduire
+      </button>
+    </div>
+  `;
   }
 
-  // Function to show the less intrusive top banner
   function showTopBannerWarning(probability, technos, similarArticles, lastSearchDate) {
     const bannerHtml = generateBannerHtml(probability, technos, similarArticles);
     const banner = document.createElement('div');
