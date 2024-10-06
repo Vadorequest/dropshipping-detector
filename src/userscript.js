@@ -127,7 +127,7 @@
 
     // If probability is between 50% and 89%, show the banner
     if (probability >= PROBABILITY_THRESHOLD_BANNER && probability < PROBABILITY_THRESHOLD_OVERLAY) {
-      showTopBannerWarning(probability);
+      showTopBannerWarning(probability, technos, similarArticles, lastSearchDate);
     }
     // If probability is 90% or higher, show the full overlay
     else if (probability >= PROBABILITY_THRESHOLD_OVERLAY) {
@@ -136,7 +136,7 @@
   }
 
   // Function to show the less intrusive top banner (for probability <= PROBABILITY_THRESHOLD)
-  function showTopBannerWarning(probability) {
+  function showTopBannerWarning(probability, technos, similarArticles, lastSearchDate) {
     const warningColor = 'orange'; // Orange for low probability warnings
 
     // Create a top banner
@@ -160,30 +160,48 @@
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${warningColor}" width="24px" height="24px" style="${iconStyle}">
         <path d="M0 0h24v24H0V0z" fill="none"/>
         <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
-      </svg> 
-      ATTENTION: Ce site a ${probability}% de probabilité d'être un site de DROPSHIPPING! 
-      <a href="#" id="viewDetails" style="text-decoration: underline; color: black;">Voir les détails</a>
+      </svg>
+      <span>ATTENTION: Ce site a ${probability}% de probabilité d'être un site de DROPSHIPPING!</span>
+      <span style="font-style: italic">(${technos?.length || 0} technos | ${similarArticles?.length || 0} articles)</span>
+      <a href="#" id="viewDetails" style="text-decoration: underline; color: black; font-weight: bold; margin-left: 20px;">Voir les détails</a>
     `;
     warningText.style.color = 'black';
     banner.appendChild(warningText);
 
     // Add a close button to remove the banner
-    const closeButton = document.createElement('button');
-    closeButton.innerHTML = `
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="black" width="24px" height="24px" style="${iconStyle}">
-        <path d="M0 0h24v24H0V0z" fill="none"/>
-        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 13.59L15.59 18 12 14.41 8.41 18 7 16.59 10.59 13 7 9.41 8.41 8 12 11.59 15.59 8 17 9.41 13.41 13 17 16.59z"/>
-      </svg> 
-      Fermer
-    `;
-    closeButton.style.background = 'transparent';
-    closeButton.style.border = 'none';
-    closeButton.style.cursor = 'pointer';
-    closeButton.style.fontSize = '16px';
-    closeButton.addEventListener('click', () => {
-      banner.remove();
+    const bannerCloseButton = document.createElement('button');
+    bannerCloseButton.innerHTML = `Réduire`;
+    bannerCloseButton.style.background = 'transparent';
+    bannerCloseButton.style.border = 'none';
+    bannerCloseButton.style.cursor = 'pointer';
+    bannerCloseButton.style.fontSize = '16px';
+    bannerCloseButton.addEventListener('click', () => {
+      banner.style.height = '4px';
+      banner.style.opacity = '0.5';
+
+      banner.addEventListener('mouseenter', () => {
+        banner.style.height = 'auto';
+        banner.style.fontSize = '16px';
+        banner.style.padding = '10px 20px';
+        banner.style.opacity = '1';
+      });
+
+      banner.addEventListener('mouseleave', () => {
+        banner.style.height = '20px';
+        banner.style.fontSize = '12px';
+        banner.style.padding = '2px 10px';
+        banner.style.opacity = '0.5';
+      });
+
+      banner.addEventListener('click', () => {
+        banner.style.height = 'auto';
+        banner.style.fontSize = '16px';
+        banner.style.padding = '10px 20px';
+        banner.style.opacity = '1';
+      });
     });
-    banner.appendChild(closeButton);
+
+    banner.appendChild(bannerCloseButton);
 
     // Append the banner to the body
     document.body.appendChild(banner);
@@ -191,21 +209,8 @@
     // Add event listener to the "Voir les détails" link to show the overlay
     document.getElementById('viewDetails').addEventListener('click', (e) => {
       e.preventDefault();
-      banner.remove();  // Optionally remove the banner when showing overlay
-      showFullScreenWarning(probability, [], [], null);  // Call the overlay function
+      showFullScreenWarning(probability, technos, similarArticles, lastSearchDate);  // Call the overlay function
     });
-  }
-
-  function getApexDomain(url) {
-    const domain = new URL(url).hostname;
-    const parts = domain.split('.').reverse();
-
-    // Handle domains like co.uk, com.au, etc.
-    if (parts.length >= 3 && (parts[1] === 'co' || parts[1] === 'com')) {
-      return parts[2] + '.' + parts[1] + '.' + parts[0];
-    }
-
-    return parts[1] + '.' + parts[0];
   }
 
   // Function to show the full-screen overlay (for probability > PROBABILITY_THRESHOLD)
@@ -231,20 +236,23 @@
     overlay.style.zIndex = '2147483647'; // Max z-index
 
     // Add a close button with an icon to remove the overlay
-    const closeButton = document.createElement('button');
-    closeButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="24px" height="24px" style="${iconStyle}"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 13.59L15.59 18 12 14.41 8.41 18 7 16.59 10.59 13 7 9.41 8.41 8 12 11.59 15.59 8 17 9.41 13.41 13 17 16.59z"/></svg> Fermer`;
-    closeButton.style.position = 'absolute';
-    closeButton.style.top = '10px';
-    closeButton.style.right = '20px';
-    closeButton.style.fontSize = '16px';
-    closeButton.style.color = 'white';
-    closeButton.style.background = 'transparent';
-    closeButton.style.border = 'none';
-    closeButton.style.cursor = 'pointer';
-    closeButton.addEventListener('click', () => {
+    const overlayCloseButton = document.createElement('button');
+    overlayCloseButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="24px" height="24px" style="${iconStyle}"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 13.59L15.59 18 12 14.41 8.41 18 7 16.59 10.59 13 7 9.41 8.41 8 12 11.59 15.59 8 17 9.41 13.41 13 17 16.59z"/></svg> Fermer`;
+    overlayCloseButton.style.position = 'absolute';
+    overlayCloseButton.style.top = '10px';
+    overlayCloseButton.style.right = '20px';
+    overlayCloseButton.style.fontSize = '16px';
+    overlayCloseButton.style.color = 'white';
+    overlayCloseButton.style.background = 'transparent';
+    overlayCloseButton.style.border = 'none';
+    overlayCloseButton.style.cursor = 'pointer';
+    overlayCloseButton.addEventListener('click', () => {
       overlay.remove();
+      if (!document.getElementById('dropshippingBanner')) {
+        showTopBannerWarning(probability, technos, similarArticles, lastSearchDate); // Recreate the banner if it's not there
+      }
     });
-    overlay.appendChild(closeButton);
+    overlay.appendChild(overlayCloseButton);
 
     // Add the probability at the top (in a big way)
     const probabilityText = document.createElement('div');
@@ -274,20 +282,18 @@
     notDropshippingLink.style.textDecoration = 'underline';
     overlay.appendChild(notDropshippingLink);
 
-// Applying styles to the scrollable technos and articles sections
     const commonSectionStyle = `
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
-  width: 90%;
-  padding: 20px;
-  color: white;
-  overflow-y: auto;
-  max-height: 40vh; /* Ensure the scrollable content takes a part of the viewport height */
-`;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: flex-start;
+      width: 90%;
+      padding: 20px;
+      color: white;
+      overflow-y: auto;
+      max-height: 40vh; /* Ensure the scrollable content takes a part of the viewport height */
+    `;
 
-// Technos Section
     if (technos && technos.length > 0) {
       const technosSection = document.createElement('div');
       technosSection.style = commonSectionStyle;
@@ -494,6 +500,18 @@
         overlay.remove();
       }
     });
+  }
+
+  function getApexDomain(url) {
+    const domain = new URL(url).hostname;
+    const parts = domain.split('.').reverse();
+
+    // Handle domains like co.uk, com.au, etc.
+    if (parts.length >= 3 && (parts[1] === 'co' || parts[1] === 'com')) {
+      return parts[2] + '.' + parts[1] + '.' + parts[0];
+    }
+
+    return parts[1] + '.' + parts[0];
   }
 
   // Detect Checkout or Cart Forms in multiple languages
