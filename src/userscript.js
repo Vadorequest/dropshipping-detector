@@ -132,6 +132,7 @@
     }
     // If probability is 90% or higher, show the full overlay
     else if (probability >= PROBABILITY_THRESHOLD_OVERLAY) {
+      showTopBannerWarning(antiDropResult);
       showFullScreenWarning(antiDropResult);
     }
   }
