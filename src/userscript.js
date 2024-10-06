@@ -242,7 +242,6 @@
       <!-- Update information -->
       <div style="margin-top: 40px; text-align: center;">
         <p>Le résultat ci-dessus est basé sur plusieurs facteurs, tels que les technologies utilisées par ce site, les produits vendus, et d'autres éléments techniques.</p>
-        <p>Dernière mise à jour sur la base de données AntiDrop: ${new Date(lastSearchDate).toLocaleDateString('fr-FR')}</p>
       </div>
 
       <!-- Disclaimer at the bottom -->
