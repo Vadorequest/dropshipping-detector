@@ -167,38 +167,14 @@
     });
   }
 
-  // Generate overlay HTML
-  function generateOverlayHtml(probability, technos, similarArticles, lastSearchDate) {
-    const warningColor = 'red';
-    return `
-      <div style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0, 0, 0, 0.9);
-        color: white; display: flex; flex-direction: column; padding: 20px; z-index: 2147483647;">
-        <button style="position: absolute; top: 10px; right: 20px; background: transparent; border: none; cursor: pointer;">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="24px" height="24px" style="${iconStyle}">
-            <path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 13.59L15.59 18 12 14.41 8.41 18 7 16.59 10.59 13 7 9.41 8.41 8 12 11.59 15.59 8 17 9.41 13.41 13 17 16.59z"/>
-          </svg> Fermer
-        </button>
-        <div style="font-size: 40px; font-weight: bold; color: ${warningColor};">${probability}%</div>
-        <div style="margin-bottom: 20px;">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${warningColor}" width="48px" height="48px" style="${iconStyle}">
-            <path d="M0 0h24v24H0V0z" fill="none"/><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
-          </svg> ATTENTION: Ce site a ${probability}% de probabilité d'être un site de DROPSHIPPING!
-        </div>
-        <div>Dernière mise à jour: ${new Date(lastSearchDate).toLocaleDateString('fr-FR')}</div>
-        <a href="https://antidrop.fr/contact" target="_blank" style="align-self: flex-start; color: white; text-decoration: underline;">
-          Ce site n'est pas du dropshipping !
-        </a>
-      </div>
-    `;
-  }
-
   function showFullScreenWarning(probability, technos, similarArticles, lastSearchDate) {
     const overlayHtml = `
     <div style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0, 0, 0, 0.9); color: white; 
-      display: flex; flex-direction: column; align-items: center; padding: 20px; z-index: 2147483647; overflow: auto;">
+      display: flex; flex-direction: column; align-items: center; padding: 20px; z-index: 2147483647; overflow: auto;" data-overlay>
       
       <!-- Close button -->
-      <button style="position: absolute; top: 10px; right: 20px; background: transparent; border: none; cursor: pointer;">
+      <button style="position: absolute; top: 10px; right: 20px; background: transparent; border: none; cursor: pointer;"
+        onclick="this.closest('[data-overlay]').remove()">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="24px" height="24px" style="${iconStyle}">
           <path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 13.59L15.59 18 12 14.41 8.41 18 7 16.59 10.59 13 7 9.41 8.41 8 12 11.59 15.59 8 17 9.41 13.41 13 17 16.59z"/>
         </svg> Fermer
@@ -244,12 +220,6 @@
     const overlay = document.createElement('div');
     overlay.innerHTML = overlayHtml;
     document.body.appendChild(overlay);
-
-    // Close the overlay when clicking the close button
-    overlay.querySelector('button').addEventListener('click', () => {
-      overlay.remove();
-      showTopBannerWarning(probability, technos, similarArticles, lastSearchDate);
-    });
   }
 
   function getArticlesList(similarArticles) {
