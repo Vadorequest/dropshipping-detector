@@ -364,97 +364,8 @@
       articlesTitleContainer.appendChild(articlesWarning);
       articlesSection.appendChild(articlesTitleContainer); // Append sticky title/warning
 
-// Add the scrollable list of articles
-      const articlesList = document.createElement('div');
-      articlesList.style.display = 'flex'; // Flex layout for multiple domains in a row
-      articlesList.style.flexWrap = 'wrap'; // Allow wrapping of items to the next row
-      articlesList.style.gap = '20px'; // Space between domain groups
-      articlesList.style.overflowY = 'auto'; // Make only the list scrollable
-      articlesList.style.maxHeight = '60vh';
 
-      const groupedArticles = {};
-
-      similarArticles.forEach(article => {
-        const apexDomain = getApexDomain(article.url);
-
-        if (!groupedArticles[apexDomain]) {
-          groupedArticles[apexDomain] = [];
-        }
-
-        groupedArticles[apexDomain].push(article);
-      });
-
-      Object.keys(groupedArticles).forEach(domain => {
-        // Create a container for each domain and its articles
-        const domainGroup = document.createElement('div');
-        domainGroup.style.display = 'flex';
-        domainGroup.style.flexDirection = 'column'; // Stack domain name and articles vertically
-        domainGroup.style.width = '100%'; // Ensure full width for each domain block
-
-        const domainDiv = document.createElement('div');
-        domainDiv.style.marginBottom = '15px';
-        domainDiv.innerHTML = `<strong>${domain}</strong>`;
-        domainGroup.appendChild(domainDiv);
-
-        // Create a container for articles under this domain
-        const articlesContainer = document.createElement('div');
-        articlesContainer.style.display = 'flex'; // Flex layout for multiple items in a row
-        articlesContainer.style.flexWrap = 'wrap'; // Allow wrapping of items to the next row
-        articlesContainer.style.gap = '20px'; // Space between articles
-
-        groupedArticles[domain].forEach(article => {
-          const articleDiv = document.createElement('div');
-          articleDiv.style.display = 'flex';
-          articleDiv.style.flexDirection = 'column'; // Column layout for article
-          articleDiv.style.width = `${IMG_SIZE + 200}px`;
-          articleDiv.style.marginBottom = '10px';
-
-          // Create anchor for both image and article title
-          const articleLink = document.createElement('a');
-          articleLink.href = article.url;
-          articleLink.style.display = 'flex'; // Flex layout for image and title side by side
-          articleLink.style.alignItems = 'flex-start'; // Align title and image to the top
-          articleLink.style.textDecoration = 'none';
-          articleLink.target = '_blank';
-
-          const img = document.createElement('img');
-          img.src = article.images[0];
-          img.style.width = `${IMG_SIZE}px`;
-          img.style.height = `${IMG_SIZE}px`;
-          img.style.marginRight = '10px';
-
-          // Append image inside the link
-          articleLink.appendChild(img);
-
-          // Add the article title inside the link
-          const articleText = document.createElement('span');
-          articleText.style.wordWrap = 'break-word'; // Allow the title to wrap if too long
-          articleText.style.fontSize = '14px'; // Adjust the size for readability
-          articleText.style.color = 'white';
-          articleText.innerHTML = `${article.title}`;
-          articleLink.appendChild(articleText);
-
-          articleDiv.appendChild(articleLink);
-
-          // Add the price below, outside the link
-          const priceDiv = document.createElement('div');
-          priceDiv.textContent = `${article.price}€`;
-          priceDiv.style.fontSize = '16px';
-          priceDiv.style.fontWeight = 'bold';
-          priceDiv.style.marginTop = '5px';
-          priceDiv.style.color = 'white';
-
-          // Append price to article div
-          articleDiv.appendChild(priceDiv);
-
-          articlesContainer.appendChild(articleDiv);
-        });
-
-        domainGroup.appendChild(articlesContainer);
-        articlesList.appendChild(domainGroup);
-      });
-
-      articlesSection.appendChild(articlesList); // Append the scrollable content to the section
+      articlesSection.appendChild(getArticlesList(similarArticles)); // Append the scrollable content to the section
       overlay.appendChild(articlesSection);
     }
 
@@ -500,6 +411,99 @@
         overlay.remove();
       }
     });
+  }
+
+  function getArticlesList(similarArticles) {
+    const articlesList = document.createElement('div');
+    articlesList.style.display = 'flex'; // Flex layout for multiple domains in a row
+    articlesList.style.flexWrap = 'wrap'; // Allow wrapping of items to the next row
+    articlesList.style.gap = '20px'; // Space between domain groups
+    articlesList.style.overflowY = 'auto'; // Make only the list scrollable
+    articlesList.style.maxHeight = '60vh';
+
+    const groupedArticles = {};
+
+    similarArticles.forEach(article => {
+      const apexDomain = getApexDomain(article.url);
+
+      if (!groupedArticles[apexDomain]) {
+        groupedArticles[apexDomain] = [];
+      }
+
+      groupedArticles[apexDomain].push(article);
+    });
+
+    Object.keys(groupedArticles).forEach(domain => {
+      // Create a container for each domain and its articles
+      const domainGroup = document.createElement('div');
+      domainGroup.style.display = 'flex';
+      domainGroup.style.flexDirection = 'column'; // Stack domain name and articles vertically
+      domainGroup.style.width = '100%'; // Ensure full width for each domain block
+
+      const domainDiv = document.createElement('div');
+      domainDiv.style.marginBottom = '15px';
+      domainDiv.innerHTML = `<strong>${domain}</strong>`;
+      domainGroup.appendChild(domainDiv);
+
+      // Create a container for articles under this domain
+      const articlesContainer = document.createElement('div');
+      articlesContainer.style.display = 'flex'; // Flex layout for multiple items in a row
+      articlesContainer.style.flexWrap = 'wrap'; // Allow wrapping of items to the next row
+      articlesContainer.style.gap = '20px'; // Space between articles
+
+      groupedArticles[domain].forEach(article => {
+        const articleDiv = document.createElement('div');
+        articleDiv.style.display = 'flex';
+        articleDiv.style.flexDirection = 'column'; // Column layout for article
+        articleDiv.style.width = `${IMG_SIZE + 200}px`;
+        articleDiv.style.marginBottom = '10px';
+
+        // Create anchor for both image and article title
+        const articleLink = document.createElement('a');
+        articleLink.href = article.url;
+        articleLink.style.display = 'flex'; // Flex layout for image and title side by side
+        articleLink.style.alignItems = 'flex-start'; // Align title and image to the top
+        articleLink.style.textDecoration = 'none';
+        articleLink.target = '_blank';
+
+        const img = document.createElement('img');
+        img.src = article.images[0];
+        img.style.width = `${IMG_SIZE}px`;
+        img.style.height = `${IMG_SIZE}px`;
+        img.style.marginRight = '10px';
+
+        // Append image inside the link
+        articleLink.appendChild(img);
+
+        // Add the article title inside the link
+        const articleText = document.createElement('span');
+        articleText.style.wordWrap = 'break-word'; // Allow the title to wrap if too long
+        articleText.style.fontSize = '14px'; // Adjust the size for readability
+        articleText.style.color = 'white';
+        articleText.innerHTML = `${article.title}`;
+        articleLink.appendChild(articleText);
+
+        articleDiv.appendChild(articleLink);
+
+        // Add the price below, outside the link
+        const priceDiv = document.createElement('div');
+        priceDiv.textContent = `${article.price}€`;
+        priceDiv.style.fontSize = '16px';
+        priceDiv.style.fontWeight = 'bold';
+        priceDiv.style.marginTop = '5px';
+        priceDiv.style.color = 'white';
+
+        // Append price to article div
+        articleDiv.appendChild(priceDiv);
+
+        articlesContainer.appendChild(articleDiv);
+      });
+
+      domainGroup.appendChild(articlesContainer);
+      articlesList.appendChild(domainGroup);
+    });
+
+    return articlesList;
   }
 
   function getApexDomain(url) {
