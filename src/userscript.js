@@ -205,7 +205,7 @@
       </button>
       
       <!-- Probability -->
-      <div style="font-size: 40px; font-weight: bold; margin-bottom: 20px; color: red;">${probability}%</div>
+      <div style="font-size: 40px; font-weight: bold; margin: 20px; color: red;">${probability}%</div>
 
       <!-- Warning text -->
       <div style="margin-bottom: 20px;">
@@ -217,17 +217,24 @@
       <!-- Technologies section -->
       ${technos && technos.length > 0 ? `
         <div style="width: 100%;">
-          <h2 style="font-size: 1.8rem; font-weight: bold; margin-bottom: 10px; text-align: left; color: white;">Technologies associées au dropshipping</h2>
-          <p style="color: orange; text-align: left;">Attention: Certaines technologies détectées sur ce site peuvent indiquer un lien avec des pratiques de dropshipping.</p>
-          ${technos.map(tech => `<div style="text-align: left;"><strong>${tech.name}:</strong> ${tech.description}</div>`).join('')}
+          <h2 style="font-size: 1.8rem; font-weight: bold; margin-bottom: 10px; text-align: left; color: white;">Technologies détectées en lien avec le dropshipping</h2>
+          <p style="color: orange; text-align: left;">
+            Attention : Certaines des technologies listées ci-dessous sont couramment associées à des sites de dropshipping.<br />
+            Cependant, cela ne signifie pas automatiquement que ce site en fait partie. Nous vous invitons à vérifier vous-même en fonction de vos propres critères.
+          </p>
+          ${technos.map((tech, index) => `<div style="text-align: left;">${index + 1}) <strong>${tech.name}:</strong> ${tech.description}</div>`).join('')}
         </div>
       ` : ''}
-
+      
       <!-- Articles section -->
       ${similarArticles && similarArticles.length > 0 ? `
         <div style="width: 100%; margin-top: 20px;">
           <h2 style="font-size: 1.8rem; font-weight: bold; margin-bottom: 10px; text-align: left; color: white;">Articles similaires trouvés sur des sites de dropshipping</h2>
-          <p style="color: orange; text-align: left;">Important: Les correspondances ci-dessous peuvent être incorrectes. Le système de AntiDrop fonctionne notamment par comparaison d'images, qui n'est pas fiable à 100%. </p>
+          <p style="color: orange; text-align: left;">
+            Important : Les articles ci-dessous ont été trouvés sur des sites identifiés comme utilisant le dropshipping, mais les correspondances ne sont pas toujours parfaites.<br />
+            Le système AntiDrop se base notamment sur la reconnaissance d'images, ce qui peut parfois mener à des résultats inexacts.<br />
+            Nous vous conseillons de bien examiner chaque article et de faire vos propres recherches.
+          </p>
           ${getArticlesList(similarArticles)}
         </div>
       ` : ''}
