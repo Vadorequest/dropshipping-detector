@@ -80,7 +80,7 @@
   function callAntidropAPI() {
     const apiUrl = 'https://antidrop.fr/api/scan';
     const currentUrl = window.location.href;
-    const language = 'fr'; // AntiDrop only support "fr" at this time
+    const language = 'fr'; // AntiDrop only supports "fr" at this time
 
     // Prepare request payload
     const payload = new URLSearchParams();
@@ -135,366 +135,156 @@
     }
   }
 
-  // Function to show the less intrusive top banner (for probability <= PROBABILITY_THRESHOLD)
-  function showTopBannerWarning(probability, technos, similarArticles, lastSearchDate) {
-    const warningColor = 'orange'; // Orange for low probability warnings
-
-    // Create a top banner
-    const banner = document.createElement('div');
-    banner.style.position = 'fixed';
-    banner.style.top = '0';
-    banner.style.left = '0';
-    banner.style.width = '100vw';
-    banner.style.backgroundColor = 'rgba(255, 165, 0, 0.95)'; // Orange background
-    banner.style.color = 'black';
-    banner.style.fontSize = '16px';
-    banner.style.display = 'flex';
-    banner.style.alignItems = 'center';
-    banner.style.justifyContent = 'space-between';
-    banner.style.padding = '10px 20px';
-    banner.style.zIndex = '2147483647'; // Max z-index
-
-    // Add the warning text with an orange SVG icon and a link to open the overlay
-    const warningText = document.createElement('div');
-    warningText.innerHTML = `
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${warningColor}" width="24px" height="24px" style="${iconStyle}">
-        <path d="M0 0h24v24H0V0z" fill="none"/>
-        <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
-      </svg>
-      <span>ATTENTION: Ce site a ${probability}% de probabilité d'être un site de DROPSHIPPING!</span>
-      <span style="font-style: italic">(${technos?.length || 0} technos | ${similarArticles?.length || 0} articles)</span>
-      <a href="#" id="viewDetails" style="text-decoration: underline; color: black; font-weight: bold; margin-left: 20px;">Voir les détails</a>
+  // Generate banner HTML
+  function generateBannerHtml(probability, technos, similarArticles) {
+    const warningColor = 'orange';
+    return `
+      <div style="position: fixed; top: 0; left: 0; width: 100vw; background-color: rgba(255, 165, 0, 0.95); color: black;
+        font-size: 16px; display: flex; align-items: center; justify-content: space-between; padding: 10px 20px; z-index: 2147483647;">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${warningColor}" width="24px" height="24px" style="${iconStyle}">
+            <path d="M0 0h24v24H0V0z" fill="none"/><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+          </svg>
+          <span>ATTENTION: Ce site a ${probability}% de probabilité d'être un site de DROPSHIPPING!</span>
+          <span style="font-style: italic">(${technos?.length || 0} technos | ${similarArticles?.length || 0} articles)</span>
+          <a href="#" id="viewDetails" style="text-decoration: underline; color: black; font-weight: bold; margin-left: 20px;">Voir les détails</a>
+        </div>
+        <button style="background: transparent; border: none; cursor: pointer; font-size: 16px;">Réduire</button>
+      </div>
     `;
-    warningText.style.color = 'black';
-    banner.appendChild(warningText);
+  }
 
-    // Add a close button to remove the banner
-    const bannerCloseButton = document.createElement('button');
-    bannerCloseButton.innerHTML = `Réduire`;
-    bannerCloseButton.style.background = 'transparent';
-    bannerCloseButton.style.border = 'none';
-    bannerCloseButton.style.cursor = 'pointer';
-    bannerCloseButton.style.fontSize = '16px';
-    bannerCloseButton.addEventListener('click', () => {
-      banner.style.height = '4px';
-      banner.style.opacity = '0.5';
-
-      banner.addEventListener('mouseenter', () => {
-        banner.style.height = 'auto';
-        banner.style.fontSize = '16px';
-        banner.style.padding = '10px 20px';
-        banner.style.opacity = '1';
-      });
-
-      banner.addEventListener('mouseleave', () => {
-        banner.style.height = '20px';
-        banner.style.fontSize = '12px';
-        banner.style.padding = '2px 10px';
-        banner.style.opacity = '0.5';
-      });
-
-      banner.addEventListener('click', () => {
-        banner.style.height = 'auto';
-        banner.style.fontSize = '16px';
-        banner.style.padding = '10px 20px';
-        banner.style.opacity = '1';
-      });
-    });
-
-    banner.appendChild(bannerCloseButton);
-
-    // Append the banner to the body
+  // Function to show the less intrusive top banner
+  function showTopBannerWarning(probability, technos, similarArticles, lastSearchDate) {
+    const bannerHtml = generateBannerHtml(probability, technos, similarArticles);
+    const banner = document.createElement('div');
+    banner.innerHTML = bannerHtml;
     document.body.appendChild(banner);
 
-    // Add event listener to the "Voir les détails" link to show the overlay
     document.getElementById('viewDetails').addEventListener('click', (e) => {
       e.preventDefault();
-      showFullScreenWarning(probability, technos, similarArticles, lastSearchDate);  // Call the overlay function
+      showFullScreenWarning(probability, technos, similarArticles, lastSearchDate);
     });
   }
 
-  // Function to show the full-screen overlay (for probability > PROBABILITY_THRESHOLD)
-  function showFullScreenWarning(probability, technos, similarArticles, lastSearchDate) {
-    const warningColor = 'red'; // Red for high probability warnings
-
-    // Create the full-screen overlay
-    const overlay = document.createElement('div');
-    overlay.style.position = 'fixed';
-    overlay.style.top = '0';
-    overlay.style.left = '0';
-    overlay.style.width = '100vw';
-    overlay.style.height = '100vh';
-    overlay.style.backgroundColor = 'rgba(0, 0, 0, 100)';
-    overlay.style.color = 'white';
-    overlay.style.fontSize = '16px';
-    overlay.style.display = 'flex';
-    overlay.style.flexDirection = 'column';
-    overlay.style.alignItems = 'center';
-    overlay.style.justifyContent = 'flex-start'; // Align content from the top
-    overlay.style.overflow = 'auto'; // Enable scrolling for the whole overlay
-    overlay.style.padding = '20px';
-    overlay.style.zIndex = '2147483647'; // Max z-index
-
-    // Add a close button with an icon to remove the overlay
-    const overlayCloseButton = document.createElement('button');
-    overlayCloseButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="24px" height="24px" style="${iconStyle}"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 13.59L15.59 18 12 14.41 8.41 18 7 16.59 10.59 13 7 9.41 8.41 8 12 11.59 15.59 8 17 9.41 13.41 13 17 16.59z"/></svg> Fermer`;
-    overlayCloseButton.style.position = 'absolute';
-    overlayCloseButton.style.top = '10px';
-    overlayCloseButton.style.right = '20px';
-    overlayCloseButton.style.fontSize = '16px';
-    overlayCloseButton.style.color = 'white';
-    overlayCloseButton.style.background = 'transparent';
-    overlayCloseButton.style.border = 'none';
-    overlayCloseButton.style.cursor = 'pointer';
-    overlayCloseButton.addEventListener('click', () => {
-      overlay.remove();
-      if (!document.getElementById('dropshippingBanner')) {
-        showTopBannerWarning(probability, technos, similarArticles, lastSearchDate); // Recreate the banner if it's not there
-      }
-    });
-    overlay.appendChild(overlayCloseButton);
-
-    // Add the probability at the top (in a big way)
-    const probabilityText = document.createElement('div');
-    probabilityText.textContent = `${probability}%`;
-    probabilityText.style.fontSize = '40px';
-    probabilityText.style.fontWeight = 'bold';
-    probabilityText.style.marginBottom = '20px';
-    probabilityText.style.color = warningColor;  // Same color as warning
-    overlay.appendChild(probabilityText);
-
-    // Add the warning text (in French) with a red SVG icon
-    const warningText = document.createElement('div');
-    warningText.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${warningColor}" width="48px" height="48px" style="${iconStyle}"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg> ATTENTION: Ce site a ${probability}% de probabilité d'être un site de DROPSHIPPING!`;
-    warningText.style.marginBottom = '20px';
-    warningText.style.color = 'white';
-    overlay.appendChild(warningText);
-
-// Add bottom-left "Ce site n'est pas du dropshipping" link
-    const notDropshippingLink = document.createElement('a');
-    notDropshippingLink.href = 'https://antidrop.fr/contact';
-    notDropshippingLink.textContent = 'Ce site n\'est pas du dropshipping !';
-    notDropshippingLink.target = '_blank';
-
-// Natural flow, no absolute positioning
-    notDropshippingLink.style.alignSelf = 'flex-start'; // Align to the left
-    notDropshippingLink.style.color = 'white';
-    notDropshippingLink.style.textDecoration = 'underline';
-    notDropshippingLink.style.marginTop = 'auto'; // Push to the bottom of the content
-
-    overlay.appendChild(notDropshippingLink);
-
-
-    const commonSectionStyle = `
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      justify-content: flex-start;
-      width: 90%;
-      padding: 20px;
-      color: white;
-      max-height: none; /* Allow sections to take full height */
-      overflow: visible; /* Prevent section scrolling */
+  // Generate overlay HTML
+  function generateOverlayHtml(probability, technos, similarArticles, lastSearchDate) {
+    const warningColor = 'red';
+    return `
+      <div style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0, 0, 0, 0.9);
+        color: white; display: flex; flex-direction: column; padding: 20px; z-index: 2147483647;">
+        <button style="position: absolute; top: 10px; right: 20px; background: transparent; border: none; cursor: pointer;">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="24px" height="24px" style="${iconStyle}">
+            <path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 13.59L15.59 18 12 14.41 8.41 18 7 16.59 10.59 13 7 9.41 8.41 8 12 11.59 15.59 8 17 9.41 13.41 13 17 16.59z"/>
+          </svg> Fermer
+        </button>
+        <div style="font-size: 40px; font-weight: bold; color: ${warningColor};">${probability}%</div>
+        <div style="margin-bottom: 20px;">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${warningColor}" width="48px" height="48px" style="${iconStyle}">
+            <path d="M0 0h24v24H0V0z" fill="none"/><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+          </svg> ATTENTION: Ce site a ${probability}% de probabilité d'être un site de DROPSHIPPING!
+        </div>
+        <div>Dernière mise à jour: ${new Date(lastSearchDate).toLocaleDateString('fr-FR')}</div>
+        <a href="https://antidrop.fr/contact" target="_blank" style="align-self: flex-start; color: white; text-decoration: underline;">
+          Ce site n'est pas du dropshipping !
+        </a>
+      </div>
     `;
+  }
 
-    if (technos && technos.length > 0) {
-      const technosSection = document.createElement('div');
-      technosSection.style = commonSectionStyle;
+  function showFullScreenWarning(probability, technos, similarArticles, lastSearchDate) {
+    const overlayHtml = `
+    <div style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0, 0, 0, 0.9); color: white; 
+      display: flex; flex-direction: column; align-items: center; padding: 20px; z-index: 2147483647; overflow: auto;">
+      
+      <!-- Close button -->
+      <button style="position: absolute; top: 10px; right: 20px; background: transparent; border: none; cursor: pointer;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="24px" height="24px" style="${iconStyle}">
+          <path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 13.59L15.59 18 12 14.41 8.41 18 7 16.59 10.59 13 7 9.41 8.41 8 12 11.59 15.59 8 17 9.41 13.41 13 17 16.59z"/>
+        </svg> Fermer
+      </button>
+      
+      <!-- Probability -->
+      <div style="font-size: 40px; font-weight: bold; margin-bottom: 20px; color: red;">${probability}%</div>
 
-      // Add the title and warning (sticky at the top)
-      const technosTitleContainer = document.createElement('div');
-      const technosTitle = document.createElement('div');
-      technosTitle.style.fontSize = '20px';
-      technosTitle.style.fontWeight = 'bold';
-      technosTitle.style.marginBottom = '10px';
-      technosTitle.style.color = 'white';
-      technosTitle.textContent = 'Technologies associées au dropshipping';
+      <!-- Warning text -->
+      <div style="margin-bottom: 20px;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="red" width="48px" height="48px" style="${iconStyle}">
+          <path d="M0 0h24v24H0V0z" fill="none"/><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+        </svg> ATTENTION: Ce site a ${probability}% de probabilité d'être un site de DROPSHIPPING!
+      </div>
 
-      const technosWarning = document.createElement('div');
-      technosWarning.style.fontSize = '14px';
-      technosWarning.style.marginBottom = '20px';
-      technosWarning.style.color = 'orange';
-      technosWarning.textContent = 'Attention: Les technologies détectées sur ce site peuvent indiquer un lien avec des pratiques de dropshipping. Veuillez les vérifier attentivement.';
+      <!-- Technologies section -->
+      ${technos && technos.length > 0 ? `
+        <div style="width: 100%; max-width: 800px;">
+          <h2 style="font-size: 1.8rem; font-weight: bold; margin-bottom: 10px; text-align: left;">Technologies associées au dropshipping</h2>
+          <p style="color: orange; text-align: left;">Attention: Les technologies détectées sur ce site peuvent indiquer un lien avec des pratiques de dropshipping.</p>
+          ${technos.map(tech => `<div style="text-align: left;"><strong>${tech.name}:</strong> ${tech.description}</div>`).join('')}
+        </div>
+      ` : ''}
 
-      technosTitleContainer.appendChild(technosTitle);
-      technosTitleContainer.appendChild(technosWarning);
-      technosSection.appendChild(technosTitleContainer);
+      <!-- Articles section -->
+      ${similarArticles && similarArticles.length > 0 ? `
+        <div style="width: 100%; max-width: 800px; margin-top: 20px;">
+          <h2 style="font-size: 1.8rem; font-weight: bold; margin-bottom: 10px; text-align: left;">Articles similaires trouvés sur des sites de dropshipping</h2>
+          <p style="color: orange; text-align: left;">Attention: Les correspondances peuvent ne pas être exactes. Veuillez les vérifier attentivement.</p>
+          ${getArticlesList(similarArticles)}
+        </div>
+      ` : ''}
 
-      // Add the scrollable list of technos
-      const technosList = document.createElement('div');
-      technosList.style.overflow = 'visible'; // Ensure no scroll on technos list
+      <!-- Update information -->
+      <div style="margin-top: 40px; text-align: center;">
+        <p>Le résultat ci-dessus est basé sur plusieurs facteurs, tels que les technologies utilisées par ce site, les produits vendus, et d'autres éléments techniques.</p>
+        <p>Dernière mise à jour sur la base de données AntiDrop: ${new Date(lastSearchDate).toLocaleDateString('fr-FR')}</p>
+        <a href="https://antidrop.fr/contact" target="_blank" style="color: white; text-decoration: underline;">Ce site n'est pas du dropshipping !</a>
+      </div>
+    </div>
+  `;
 
-      technos.forEach(tech => {
-        const techDiv = document.createElement('div');
-        techDiv.style.marginBottom = '10px';
-        techDiv.innerHTML = `<strong>${tech.name}:</strong> ${tech.description}`;
-        technosList.appendChild(techDiv);
-      });
-
-      technosSection.appendChild(technosList); // Append the scrollable content to the section
-      overlay.appendChild(technosSection);
-    }
-
-    if (similarArticles && similarArticles.length > 0) {
-      const articlesSection = document.createElement('div');
-      articlesSection.style = commonSectionStyle;
-
-      const articlesTitleContainer = document.createElement('div');
-
-      const articlesTitle = document.createElement('div');
-      articlesTitle.style.fontSize = '1.8rem';
-      articlesTitle.style.fontWeight = 'bold';
-      articlesTitle.style.marginBottom = '10px';
-      articlesTitle.style.color = 'white';
-      articlesTitle.textContent = 'Articles similaires trouvés sur des sites de dropshipping';
-
-      const articlesWarning = document.createElement('div');
-      articlesWarning.style.fontSize = '14px';
-      articlesWarning.style.marginBottom = '20px';
-      articlesWarning.style.color = 'orange';
-      articlesWarning.textContent = `Attention: Les correspondances peuvent ne pas être exactes. Certains articles ci-dessous  peuvent ne pas être vendus par ${domainName}. Veuillez les vérifier attentivement.`;
-
-      articlesTitleContainer.appendChild(articlesTitle);
-      articlesTitleContainer.appendChild(articlesWarning);
-      articlesSection.appendChild(articlesTitleContainer); // Append sticky title/warning
-
-
-      articlesSection.appendChild(getArticlesList(similarArticles)); // Append the scrollable content to the section
-      overlay.appendChild(articlesSection);
-    }
-
-    const explanationSection = document.createElement('div');
-    explanationSection.style.textAlign = 'center';
-    explanationSection.style.marginTop = '40px'; // Add some spacing from the previous sections
-    explanationSection.style.color = 'white';
-
-    const explanationText = document.createElement('div');
-    explanationText.innerHTML = `
-    <p>Le résultat ci-dessus est basé sur plusieurs facteurs, tels que les technologies utilisées par ce site, les produits vendus, et d'autres éléments techniques.</p>
-    <p>Un pourcentage de 100% est généralement très fiable. Si vous avez des doutes, vous pouvez visiter <a href="https://antidrop.fr/contact" target="_blank" style="color: white; text-decoration: underline;">ce lien</a> pour plus de détails ou pour contester le résultat.</p>
-    <p>Résultat fourni par <a href="https://antidrop.fr" target="_blank" style="color: white; text-decoration: underline;">antidrop.fr</a></p>
-    <p>Dernière mise à jour sur la base de données AntiDrop: ${new Date(lastSearchDate).toLocaleDateString('fr-FR', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: 'numeric'
-    })}</p>
-`;
-
-    explanationSection.appendChild(explanationText);
-
-    overlay.appendChild(explanationSection);
-
-    // Add disclaimer at the bottom
-    const disclaimer = document.createElement('div');
-    disclaimer.style.position = 'absolute';
-    disclaimer.style.bottom = '10px';
-    disclaimer.style.right = '10px';
-    disclaimer.style.fontSize = '12px';
-    disclaimer.style.color = 'gray';
-    disclaimer.style.textAlign = 'center';
-    disclaimer.innerHTML = 'Avertissement : Cet outil est destiné à informer les utilisateurs sur les sites potentiellement liés au dropshipping. Il n\'est pas garanti à 100% précis. Vous pouvez consulter les détails complets sur la page <a href="https://antidrop.fr/disclaimer" style="color: white; text-decoration: underline; font-size: 12px" target="_blank">d\'antidrop.fr</a>.';
-    overlay.appendChild(disclaimer);
-
+    const overlay = document.createElement('div');
+    overlay.innerHTML = overlayHtml;
     document.body.appendChild(overlay);
 
-    // Add an event listener for the Escape key to close the overlay
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' || e.key === 'Esc') {
-        overlay.remove();
-      }
+    // Close the overlay when clicking the close button
+    overlay.querySelector('button').addEventListener('click', () => {
+      overlay.remove();
+      showTopBannerWarning(probability, technos, similarArticles, lastSearchDate);
     });
   }
 
   function getArticlesList(similarArticles) {
-    const articlesList = document.createElement('div');
-    articlesList.style.overflow = 'visible'; // Ensure no scroll on articles list
-
     const groupedArticles = {};
 
+    // Group articles by domain
     similarArticles.forEach(article => {
       const apexDomain = getApexDomain(article.url);
-
       if (!groupedArticles[apexDomain]) {
         groupedArticles[apexDomain] = [];
       }
-
       groupedArticles[apexDomain].push(article);
     });
 
-    Object.keys(groupedArticles).forEach(domain => {
-      // Create a container for each domain and its articles
-      const domainGroup = document.createElement('div');
-      domainGroup.style.display = 'flex';
-      domainGroup.style.flexDirection = 'column'; // Stack domain name and articles vertically
-      domainGroup.style.width = '100%'; // Ensure full width for each domain block
+    // Generate HTML for each domain and its articles
+    return Object.keys(groupedArticles).map(domain => {
+      const articlesHtml = groupedArticles[domain].map(article => `
+      <div style="display: flex; flex-direction: column; width: ${IMG_SIZE + 200}px; margin-bottom: 10px;">
+        <a href="${article.url}" style="display: flex; align-items: flex-start; text-decoration: none;" target="_blank">
+          <img src="${article.images[0]}" style="width: ${IMG_SIZE}px; height: ${IMG_SIZE}px; margin-right: 10px;">
+          <span style="word-wrap: break-word; font-size: 14px; color: white;">${article.title}</span>
+        </a>
+        <div style="font-size: 16px; font-weight: bold; margin-top: 5px; color: white;">${article.price}€</div>
+      </div>
+    `).join('');
 
-      const domainDiv = document.createElement('div');
-      domainDiv.style.marginBottom = '15px';
-      domainDiv.innerHTML = `<strong>${domain}</strong>`;
-      domainGroup.appendChild(domainDiv);
-
-      // Create a container for articles under this domain
-      const articlesContainer = document.createElement('div');
-      articlesContainer.style.display = 'flex'; // Flex layout for multiple items in a row
-      articlesContainer.style.flexWrap = 'wrap'; // Allow wrapping of items to the next row
-      articlesContainer.style.gap = '20px'; // Space between articles
-
-      groupedArticles[domain].forEach(article => {
-        const articleDiv = document.createElement('div');
-        articleDiv.style.display = 'flex';
-        articleDiv.style.flexDirection = 'column'; // Column layout for article
-        articleDiv.style.width = `${IMG_SIZE + 200}px`;
-        articleDiv.style.marginBottom = '10px';
-
-        // Create anchor for both image and article title
-        const articleLink = document.createElement('a');
-        articleLink.href = article.url;
-        articleLink.style.display = 'flex'; // Flex layout for image and title side by side
-        articleLink.style.alignItems = 'flex-start'; // Align title and image to the top
-        articleLink.style.textDecoration = 'none';
-        articleLink.target = '_blank';
-
-        const img = document.createElement('img');
-        img.src = article.images[0];
-        img.style.width = `${IMG_SIZE}px`;
-        img.style.height = `${IMG_SIZE}px`;
-        img.style.marginRight = '10px';
-
-        // Append image inside the link
-        articleLink.appendChild(img);
-
-        // Add the article title inside the link
-        const articleText = document.createElement('span');
-        articleText.style.wordWrap = 'break-word'; // Allow the title to wrap if too long
-        articleText.style.fontSize = '14px'; // Adjust the size for readability
-        articleText.style.color = 'white';
-        articleText.innerHTML = `${article.title}`;
-        articleLink.appendChild(articleText);
-
-        articleDiv.appendChild(articleLink);
-
-        // Add the price below, outside the link
-        const priceDiv = document.createElement('div');
-        priceDiv.textContent = `${article.price}€`;
-        priceDiv.style.fontSize = '16px';
-        priceDiv.style.fontWeight = 'bold';
-        priceDiv.style.marginTop = '5px';
-        priceDiv.style.color = 'white';
-
-        // Append price to article div
-        articleDiv.appendChild(priceDiv);
-
-        articlesContainer.appendChild(articleDiv);
-      });
-
-      domainGroup.appendChild(articlesContainer);
-      articlesList.appendChild(domainGroup);
-    });
-
-    return articlesList;
+      return `
+      <div style="display: flex; flex-direction: column; width: 100%;">
+        <div style="margin-bottom: 15px;"><strong>${domain}</strong></div>
+        <div style="display: flex; flex-wrap: wrap; gap: 20px; overflow: auto;">${articlesHtml}</div>
+      </div>
+    `;
+    }).join('');
   }
+
 
   function getApexDomain(url) {
     const domain = new URL(url).hostname;
