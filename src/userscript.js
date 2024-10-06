@@ -100,13 +100,10 @@
       .then(response => response.json())
       .then(data => {
         if (data && data.mark > 0) {
+          data.probability = getProbability(data.mark);
+
           console.debug('[Dropshipping Detector] Dropshipping site detected.', data);
-          showDropshippingWarning(
-            data?.mark ?? 0,
-            data?.website?.technos ?? [],
-            data?.similarArticles ?? [],
-            data?.lastSearchDate ?? null
-          );
+          showDropshippingWarning(data);
         } else {
           console.debug('[Dropshipping Detector] No dropshipping detected.', data);
         }
@@ -116,8 +113,12 @@
       });
   }
 
-  function showDropshippingWarning(mark, technos, similarArticles, lastSearchDate) {
-    const probability = (mark / 5) * 100;
+  function getProbability(mark) {
+    return (mark / 5) * 100;
+  }
+
+  function showDropshippingWarning(antiDropResult) {
+    const { probability } = antiDropResult || {};
 
     // If probability is less than the banner threshold, do nothing
     if (probability < PROBABILITY_THRESHOLD_BANNER) {
@@ -127,11 +128,11 @@
 
     // If probability is between 50% and 89%, show the banner
     if (probability >= PROBABILITY_THRESHOLD_BANNER && probability < PROBABILITY_THRESHOLD_OVERLAY) {
-      showTopBannerWarning(probability, technos, similarArticles, lastSearchDate);
+      showTopBannerWarning(antiDropResult);
     }
     // If probability is 90% or higher, show the full overlay
     else if (probability >= PROBABILITY_THRESHOLD_OVERLAY) {
-      showFullScreenWarning(probability, technos, similarArticles, lastSearchDate);
+      showFullScreenWarning(antiDropResult);
     }
   }
 
@@ -177,7 +178,8 @@
   `;
   }
 
-  function showTopBannerWarning(probability, technos, similarArticles, lastSearchDate) {
+  function showTopBannerWarning(antiDropResult) {
+    const { probability, website: { technos }, similarArticles } = antiDropResult || {};
     const bannerHtml = generateBannerHtml(probability, technos, similarArticles);
     const banner = document.createElement('div');
     banner.innerHTML = bannerHtml;
@@ -185,11 +187,12 @@
 
     document.getElementById('viewDetails').addEventListener('click', (e) => {
       e.preventDefault();
-      showFullScreenWarning(probability, technos, similarArticles, lastSearchDate);
+      showFullScreenWarning(antiDropResult);
     });
   }
 
-  function showFullScreenWarning(probability, technos, similarArticles, lastSearchDate) {
+  function showFullScreenWarning(antiDropResult) {
+    const { probability, website: { technos }, similarArticles } = antiDropResult || {};
     const overlayHtml = `
     <div style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0, 0, 0, 0.9); color: white; 
       display: flex; flex-direction: column; align-items: center; padding: 20px; z-index: 2147483647; overflow: auto;" data-overlay>
