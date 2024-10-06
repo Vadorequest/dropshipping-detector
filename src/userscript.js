@@ -270,17 +270,20 @@
     warningText.style.color = 'white';
     overlay.appendChild(warningText);
 
-    // Add bottom-left "Ce site n'est pas du dropshipping" link
+// Add bottom-left "Ce site n'est pas du dropshipping" link
     const notDropshippingLink = document.createElement('a');
     notDropshippingLink.href = 'https://antidrop.fr/contact';
     notDropshippingLink.textContent = 'Ce site n\'est pas du dropshipping !';
     notDropshippingLink.target = '_blank';
-    notDropshippingLink.style.position = 'absolute';
-    notDropshippingLink.style.bottom = '10px';
-    notDropshippingLink.style.left = '10px';
+
+// Natural flow, no absolute positioning
+    notDropshippingLink.style.alignSelf = 'flex-start'; // Align to the left
     notDropshippingLink.style.color = 'white';
     notDropshippingLink.style.textDecoration = 'underline';
+    notDropshippingLink.style.marginTop = 'auto'; // Push to the bottom of the content
+
     overlay.appendChild(notDropshippingLink);
+
 
     const commonSectionStyle = `
       display: flex;
@@ -290,8 +293,8 @@
       width: 90%;
       padding: 20px;
       color: white;
-      overflow-y: auto;
-      max-height: 40vh; /* Ensure the scrollable content takes a part of the viewport height */
+      max-height: none; /* Allow sections to take full height */
+      overflow: visible; /* Prevent section scrolling */
     `;
 
     if (technos && technos.length > 0) {
@@ -300,10 +303,6 @@
 
       // Add the title and warning (sticky at the top)
       const technosTitleContainer = document.createElement('div');
-      technosTitleContainer.style.position = 'sticky'; // Sticky to keep it visible
-      technosTitleContainer.style.top = '0'; // Stick at the top of the section
-      technosTitleContainer.style.backgroundColor = 'rgba(0, 0, 0, 0.95)'; // Ensure it stands out with background
-
       const technosTitle = document.createElement('div');
       technosTitle.style.fontSize = '20px';
       technosTitle.style.fontWeight = 'bold';
@@ -319,12 +318,11 @@
 
       technosTitleContainer.appendChild(technosTitle);
       technosTitleContainer.appendChild(technosWarning);
-      technosSection.appendChild(technosTitleContainer); // Append sticky title/warning
+      technosSection.appendChild(technosTitleContainer);
 
       // Add the scrollable list of technos
       const technosList = document.createElement('div');
-      technosList.style.overflowY = 'auto'; // Make only the list scrollable
-      technosList.style.maxHeight = '30vh';
+      technosList.style.overflow = 'visible'; // Ensure no scroll on technos list
 
       technos.forEach(tech => {
         const techDiv = document.createElement('div');
@@ -341,11 +339,7 @@
       const articlesSection = document.createElement('div');
       articlesSection.style = commonSectionStyle;
 
-      // Add the title and warning (sticky at the top)
       const articlesTitleContainer = document.createElement('div');
-      articlesTitleContainer.style.position = 'sticky'; // Sticky to keep it visible
-      articlesTitleContainer.style.top = '0'; // Stick at the top of the section
-      articlesTitleContainer.style.backgroundColor = 'rgba(0, 0, 0, 0.95)'; // Ensure it stands out with background
 
       const articlesTitle = document.createElement('div');
       articlesTitle.style.fontSize = '1.8rem';
@@ -415,11 +409,7 @@
 
   function getArticlesList(similarArticles) {
     const articlesList = document.createElement('div');
-    articlesList.style.display = 'flex'; // Flex layout for multiple domains in a row
-    articlesList.style.flexWrap = 'wrap'; // Allow wrapping of items to the next row
-    articlesList.style.gap = '20px'; // Space between domain groups
-    articlesList.style.overflowY = 'auto'; // Make only the list scrollable
-    articlesList.style.maxHeight = '60vh';
+    articlesList.style.overflow = 'visible'; // Ensure no scroll on articles list
 
     const groupedArticles = {};
 
