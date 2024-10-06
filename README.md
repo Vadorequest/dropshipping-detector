@@ -3,7 +3,7 @@ Dropshipping detector based on Antidrop.fr API.
 
 ## 🇫🇷 Tutoriel vidéo
 
-[![image](https://github.com/user-attachments/assets/e0ab62a3-c797-438e-acec-eb02e6f38d28)](Turoriel vidéo)
+[![image](https://github.com/user-attachments/assets/e0ab62a3-c797-438e-acec-eb02e6f38d28)](https://www.loom.com/share/3219f9d896ba4d24ad227513bd708b73)
 
 ## Features:
 - Userscript (install it using Tampermonkey, on any browser)
