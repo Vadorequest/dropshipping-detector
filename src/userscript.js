@@ -147,7 +147,7 @@
           <path d="M0 0h24v24H0V0z" fill="none"/><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
         </svg>
         <span>ATTENTION: Ce site a ${probability}% de probabilité d'être un site de DROPSHIPPING selon AntiDrop !</span>
-        <span style="font-style: italic">(${technos?.length || 0} techno${technos?.length > 1 ? 's' : ''} | ${similarArticles?.length || 0} article${similarArticles?.length > 1 ? 's' : ''})</span>
+        <span style="font-style: italic">(${technos?.length || 0} techno${technos?.length > 1 ? 's' : ''}, ${similarArticles?.length || 0} article${similarArticles?.length > 1 ? 's' : ''})</span>
         <a href="#" id="viewDetails" style="text-decoration: underline; color: black; font-weight: bold; margin-left: 20px;">Voir les détails</a>
       </div>
 
